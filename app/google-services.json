@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "908463356566",
+    "project_id": "projektr-kt",
+    "storage_bucket": "projektr-kt.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:908463356566:android:c5d5682caf8f8fabece0b7",
+        "android_client_info": {
+          "package_name": "com.example.projektr"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAC4q0hlsqayFwOnGrgACA-5HrQCq-QxnA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
