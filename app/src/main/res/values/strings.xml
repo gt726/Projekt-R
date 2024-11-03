@@ -13,4 +13,7 @@
     <string name="welcome_text">Welcome</string>
     <string name="sign_up">Sign Up</string>
     <string name="log_in">Log In</string>
+    <string name="login_title">Sign in\nto your account</string>
+    <string name="register_title">Create a new\naccount</string>
+    <string name="prompt_name">Name</string>
 </resources>
