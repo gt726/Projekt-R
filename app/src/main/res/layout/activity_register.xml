@@ -5,26 +5,51 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.LoginActivity"
-    android:background="@drawable/setup_background"
+    tools:context=".activities.RegisterActivity"
     android:orientation="vertical"
-    android:gravity="center">
+    android:gravity="center"
+    android:background="@drawable/setup_background">
 
     <TextView
         android:id="@+id/login_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/login_title"
+        android:text="@string/register_title"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="45sp"
-        android:layout_marginTop="-100dp"
+        android:layout_marginTop="40dp"
         android:layout_marginBottom="80dp"
         android:fontFamily="@font/roboto_bold" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+        <EditText
+
+            android:id="@+id/name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:autofillHints=""
+            android:background="@drawable/text_input_background"
+
+            android:fontFamily="@font/roboto_light"
+            android:hint="@string/prompt_name"
+            android:inputType="text"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="15dp"
+
+
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:textSize="20sp"
+            android:layout_marginTop="30dp"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.7" />
 
         <EditText
 
@@ -48,7 +73,7 @@
 
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/name"
             app:layout_constraintWidth_percent="0.7" />
 
         <EditText
@@ -82,7 +107,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
 
-            android:text="@string/log_in"
+            android:text="@string/sign_up"
             android:textColor="@color/white"
             android:textSize="25sp"
             android:backgroundTint="#355CFF"

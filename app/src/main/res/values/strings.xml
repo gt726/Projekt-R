@@ -16,4 +16,5 @@
     <string name="login_title">Sign in\nto your account</string>
     <string name="register_title">Create a new\naccount</string>
     <string name="prompt_name">Name</string>
+    <string name="test">Login radi!</string>
 </resources>
