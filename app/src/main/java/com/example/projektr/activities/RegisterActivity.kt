@@ -21,6 +21,7 @@ class RegisterActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_register)
 
+        // inicijaliziraj FirebaseAuth
         auth = FirebaseAuth.getInstance()
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -29,24 +30,26 @@ class RegisterActivity : AppCompatActivity() {
             insets
         }
 
+
         //moj kod
+        // pronadi polja za unos imena, e-maila i lozinke te gumb za registraciju
         val nameField = findViewById<EditText>(R.id.name)
         val emailField = findViewById<EditText>(R.id.email)
         val passwordField = findViewById<EditText>(R.id.password)
         val signUpButton = findViewById<Button>(R.id.login_btn)
 
-        // Set onClickListener for the sign-up button
+        // postavi onClickListener za gumb "Sign Up"
         signUpButton.setOnClickListener {
             val email = emailField.text.toString().trim()
             val password = passwordField.text.toString().trim()
 
-            // Validate input
+            // provjeri input
             if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Create a new user with Firebase
+            // registriraj korisnika
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
@@ -54,6 +57,7 @@ class RegisterActivity : AppCompatActivity() {
                         Toast.makeText(this, "User registered successfully", Toast.LENGTH_SHORT)
                             .show()
                         // Optionally, navigate to a different activity or perform other actions
+
                         val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)
                         finish() // Optionally close the registration activity
