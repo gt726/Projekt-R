@@ -9,6 +9,11 @@
         android:id="@+id/exerciseName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
+
+        android:padding="6dp"
         android:text="Exercise Name"
-        android:textSize="18sp" />
+        android:fontFamily="@font/roboto_bold"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
 </LinearLayout>

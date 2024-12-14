@@ -10,6 +10,6 @@
         android:title="@string/workout" />
     <item
         android:id="@+id/nav_exercises"
-        android:icon="@drawable/ic_exercises"
+        android:icon="@drawable/ic_exercises_w"
         android:title="@string/exercises" />
 </menu>
