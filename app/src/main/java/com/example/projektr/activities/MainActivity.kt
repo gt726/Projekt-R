@@ -7,6 +7,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.projektr.R
 import com.example.projektr.fragments.main.ExercisesFragment
+import com.example.projektr.fragments.main.HistoryFragment
+import com.example.projektr.fragments.main.WorkoutFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -30,6 +32,20 @@ class MainActivity : AppCompatActivity() {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, ExercisesFragment())
                         .commit()
+                    true
+                }
+
+                R.id.nav_workout -> {
+                    // Navigate to Workout Fragment
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, WorkoutFragment()).commit()
+                    true
+                }
+
+                R.id.nav_history -> {
+                    // Navigate to History Fragment
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, HistoryFragment()).commit()
                     true
                 }
 
