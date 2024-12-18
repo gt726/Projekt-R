@@ -50,6 +50,7 @@ class ExercisesFragment : Fragment() {
             Exercise("Wall Sit"),
             Exercise("Calf Raises")
         )
+        exercisesList = exercisesList.sortedBy { it.name } // sortiraj vjezbe po imenu
 
         recyclerView = binding.recyclerView // povezi xml
         adapter =
