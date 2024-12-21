@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
 
         // Default fragment
         if (savedInstanceState == null) {
-            bottomNavigationView.selectedItemId = R.id.nav_exercises
+            bottomNavigationView.selectedItemId = R.id.nav_workout
         }
     }
 }
