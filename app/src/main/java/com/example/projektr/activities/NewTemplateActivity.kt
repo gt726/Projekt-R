@@ -3,6 +3,9 @@ package com.example.projektr.activities
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.projektr.R
 import com.example.projektr.adapters.ExercisesAdapter
+import com.example.projektr.adapters.ExercisesTemplateAdapter
 import com.example.projektr.data.Exercise
 import com.example.projektr.data.ExerciseList
 import com.example.projektr.databinding.ActivityNewTemplateBinding
@@ -21,7 +25,8 @@ class NewTemplateActivity : AppCompatActivity() {
 
     private lateinit var exerciseList: List<Exercise>  // popis vjezbi
     private lateinit var recyclerView: RecyclerView // prikaz vjezbi
-    private lateinit var adapter: ExercisesAdapter  // povezivanje podataka s prikazom
+    private lateinit var adapter: ExercisesTemplateAdapter  // povezivanje podataka s prikazom
+    private val selectedExercises = mutableListOf<Pair<Exercise, Int>>() // odabrane vjezbe
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val binding = ActivityNewTemplateBinding.inflate(layoutInflater)
@@ -39,18 +44,17 @@ class NewTemplateActivity : AppCompatActivity() {
 
         recyclerView = binding.exercisesRecyclerView // povezi xml
         adapter =
-            ExercisesAdapter(exerciseList) //stvori novu instancu adaptera i predaj mu popis vjezbi kao argument
+            ExercisesTemplateAdapter(exerciseList) { exercise -> addSetsPrompt(exercise) } //stvori novu instancu adaptera i predaj mu popis vjezbi kao argument
         recyclerView.layoutManager = LinearLayoutManager(this) // postavi layout manager
         recyclerView.adapter = adapter // postavi adapter za recyclerView
 
-        // cancel button
+        // ako kliknem cancel button
         findViewById<Button>(R.id.cancel_button).setOnClickListener {
             finish()
         }
 
-        // finish button
+        // ako kliknem finish button
         findViewById<Button>(R.id.finish_button).setOnClickListener {
-            addSetsPrompt(ExerciseList.list[0])
             saveTemplate()
         }
     }
@@ -63,14 +67,31 @@ class NewTemplateActivity : AppCompatActivity() {
         prompt.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
 
-//        val promptCancelButton = findViewById<Button>(R.id.prompt_cancel_button)
-//
-//        promptCancelButton.setOnClickListener {
-//            prompt.dismiss()
-//        }
+        val exerciseName = promptView.findViewById<TextView>(R.id.exerciseName)
+        val numberOfSets = promptView.findViewById<EditText>(R.id.sets)
+        val okButton = promptView.findViewById<Button>(R.id.ok_button)
+        val cancelButton = promptView.findViewById<Button>(R.id.prompt_cancel_button)
+
+        // postavi ime vjezbe
+        exerciseName.text = exercise.name
+
+        cancelButton.setOnClickListener() {
+            prompt.dismiss()
+        }
+
+        okButton.setOnClickListener() {
+            val sets = numberOfSets.text.toString().toIntOrNull()
+            if (sets != null && sets > 0) {
+                selectedExercises.add(Pair(exercise, sets))
+                prompt.dismiss()
+            } else {
+                Toast.makeText(this, "Please enter a valid number of sets", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+
 
         prompt.show()
-
     }
 
 
