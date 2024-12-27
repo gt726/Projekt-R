@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.projektr.data.Exercise
 import com.example.projektr.databinding.ListItemExerciseBinding
 
+// za fragment
+
 class ExercisesAdapter(private val exercises: List<Exercise>) :
     RecyclerView.Adapter<ExercisesAdapter.ExerciseViewHolder>() {
 

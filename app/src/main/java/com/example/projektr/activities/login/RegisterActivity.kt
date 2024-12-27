@@ -1,8 +1,7 @@
-package com.example.projektr.activities
+package com.example.projektr.activities.login
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -11,25 +10,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.projektr.R
+import com.example.projektr.activities.MainActivity
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 
-class LoginActivity : AppCompatActivity() {
+class RegisterActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
-
-    companion object {
-        private const val TAG = "LoginActivity"
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_login)
+        setContentView(R.layout.activity_register)
 
         // inicijaliziraj FirebaseAuth
-        auth = Firebase.auth
+        auth = FirebaseAuth.getInstance()
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -39,13 +33,14 @@ class LoginActivity : AppCompatActivity() {
 
 
         //moj kod
-        // Pronađi polja za unos e-maila i lozinke te gumb za prijavu
+        // pronadi polja za unos imena, e-maila i lozinke te gumb za registraciju
+        val nameField = findViewById<EditText>(R.id.name)
         val emailField = findViewById<EditText>(R.id.email)
         val passwordField = findViewById<EditText>(R.id.password)
-        val logInButton = findViewById<Button>(R.id.login_btn)
+        val signUpButton = findViewById<Button>(R.id.login_btn)
 
-        // postavi onClickListener za gumb "Log In"
-        logInButton.setOnClickListener {
+        // postavi onClickListener za gumb "Sign Up"
+        signUpButton.setOnClickListener {
             val email = emailField.text.toString().trim()
             val password = passwordField.text.toString().trim()
 
@@ -55,23 +50,24 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // prijavi korisnika
-            auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this) { task ->
+            // registriraj korisnika
+            auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d(TAG, "signInWithEmail:success")
-                        val user = auth.currentUser
+                        // User creation successful
+                        Toast.makeText(this, "User registered successfully", Toast.LENGTH_SHORT)
+                            .show()
+                        // Optionally, navigate to a different activity or perform other actions
+
                         val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)
                         finish() // Optionally close the registration activity
                     } else {
-                        // If sign in fails, display a message to the user.
-                        Log.w(TAG, "signInWithEmail:failure", task.exception)
+                        // If sign-up fails, display a message to the user
                         Toast.makeText(
-                            baseContext,
-                            "Authentication failed.",
-                            Toast.LENGTH_SHORT,
+                            this,
+                            "Registration failed: ${task.exception?.message}",
+                            Toast.LENGTH_SHORT
                         ).show()
                     }
                 }

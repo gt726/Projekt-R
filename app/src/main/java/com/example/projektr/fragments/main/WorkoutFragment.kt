@@ -6,9 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import com.example.projektr.R
-import com.example.projektr.activities.NewTemplateActivity
+import com.example.projektr.activities.template.AddExerciseActivity
 import com.example.projektr.activities.SettingsActivity
 import com.example.projektr.databinding.FragmentWorkoutBinding
 
@@ -41,7 +39,7 @@ class WorkoutFragment : Fragment() {
             binding.createTemplateButton //view.findViewById<Button>(R.id.createTemplateButton)
 
         createTemplateBtn.setOnClickListener {
-            val intent = Intent(activity, NewTemplateActivity::class.java)
+            val intent = Intent(activity, AddExerciseActivity::class.java)
             startActivity(intent)
         }
 

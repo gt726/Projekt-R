@@ -1,4 +1,4 @@
-package com.example.projektr.activities
+package com.example.projektr.activities.template
 
 import android.content.Intent
 import android.os.Bundle
@@ -14,22 +14,29 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.projektr.R
-import com.example.projektr.adapters.ExercisesAdapter
-import com.example.projektr.adapters.ExercisesTemplateAdapter
+import com.example.projektr.adapters.AddExerciseAdapter
 import com.example.projektr.data.Exercise
 import com.example.projektr.data.ExerciseList
-import com.example.projektr.databinding.ActivityNewTemplateBinding
-import com.example.projektr.databinding.FragmentExercisesBinding
+import com.example.projektr.data.ExerciseWithSets
+import com.example.projektr.databinding.ActivityAddExerciseBinding
 
-class NewTemplateActivity : AppCompatActivity() {
+class AddExerciseActivity : AppCompatActivity() {
 
     private lateinit var exerciseList: List<Exercise>  // popis vjezbi
     private lateinit var recyclerView: RecyclerView // prikaz vjezbi
-    private lateinit var adapter: ExercisesTemplateAdapter  // povezivanje podataka s prikazom
-    private val selectedExercises = mutableListOf<Pair<Exercise, Int>>() // odabrane vjezbe
+    private lateinit var adapter: AddExerciseAdapter  // povezivanje podataka s prikazom
+    private val selectedExercises = mutableListOf<ExerciseWithSets>() // odabrane vjezbe
+//    private val selectedExercises = mutableListOf<ExerciseWithSets>(
+//        ExerciseWithSets(Exercise("Push-up"), 1),
+//        ExerciseWithSets(Exercise("Squat"), 2),
+//        ExerciseWithSets(Exercise("Plank"), 3),
+//        ExerciseWithSets(Exercise("Lunges"), 4),
+//        ExerciseWithSets(Exercise("Jumping Jacks"), 5),
+//        ExerciseWithSets(Exercise("Burpees"), 6)
+//    ) // odabrane vjezbe
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val binding = ActivityNewTemplateBinding.inflate(layoutInflater)
+        val binding = ActivityAddExerciseBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(binding.root)
@@ -39,28 +46,42 @@ class NewTemplateActivity : AppCompatActivity() {
             insets
         }
 
+        val passedExercises =
+            intent.getSerializableExtra("EXERCISES_LIST") as? ArrayList<ExerciseWithSets>
+        if (passedExercises != null) {
+            //selectedExercises.clear()
+            selectedExercises.addAll(passedExercises)
+        }
+
 
         exerciseList = ExerciseList.list.sortedBy { it.name } // sortiraj vjezbe po imenu
 
         recyclerView = binding.exercisesRecyclerView // povezi xml
         adapter =
-            ExercisesTemplateAdapter(exerciseList) { exercise -> addSetsPrompt(exercise) } //stvori novu instancu adaptera i predaj mu popis vjezbi kao argument
+            AddExerciseAdapter(exerciseList) { exercise -> addSetsPrompt(exercise) } //stvori novu instancu adaptera i predaj mu popis vjezbi kao argument
         recyclerView.layoutManager = LinearLayoutManager(this) // postavi layout manager
         recyclerView.adapter = adapter // postavi adapter za recyclerView
 
         // ako kliknem cancel button
         findViewById<Button>(R.id.cancel_button).setOnClickListener {
+            val intent = Intent(this, EditTemplateActivity::class.java)
+            intent.putExtra(
+                "EXERCISES_LIST",
+                ArrayList(selectedExercises.map {
+                    ExerciseWithSets(
+                        it.exercise,
+                        it.numberOfSets
+                    )
+                })
+            )
+            startActivity(intent)
             finish()
         }
 
-        // ako kliknem finish button
-        findViewById<Button>(R.id.finish_button).setOnClickListener {
-            saveTemplate()
-        }
     }
 
     private fun addSetsPrompt(exercise: Exercise) {
-        val promptView = layoutInflater.inflate(R.layout.add_sets_prompt, null)
+        val promptView = layoutInflater.inflate(R.layout.prompt_add_sets, null)
         val prompt = AlertDialog.Builder(this)
             .setView(promptView)
             .create()
@@ -82,20 +103,29 @@ class NewTemplateActivity : AppCompatActivity() {
         okButton.setOnClickListener() {
             val sets = numberOfSets.text.toString().toIntOrNull()
             if (sets != null && sets > 0) {
-                selectedExercises.add(Pair(exercise, sets))
+                selectedExercises.add(ExerciseWithSets(exercise, sets))
                 prompt.dismiss()
+
+                // zapocni edit template activity i posalji mu popis vjezbi
+                val intent = Intent(this, EditTemplateActivity::class.java)
+                intent.putExtra(
+                    "EXERCISES_LIST",
+                    ArrayList(selectedExercises.map {
+                        ExerciseWithSets(
+                            it.exercise,
+                            it.numberOfSets
+                        )
+                    })
+                )
+                startActivity(intent)
+                finish()
             } else {
                 Toast.makeText(this, "Please enter a valid number of sets", Toast.LENGTH_SHORT)
                     .show()
             }
         }
 
-
         prompt.show()
-    }
-
-
-    private fun saveTemplate() {
     }
 }
 

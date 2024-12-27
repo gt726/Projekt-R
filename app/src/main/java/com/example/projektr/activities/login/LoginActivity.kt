@@ -1,7 +1,8 @@
-package com.example.projektr.activities
+package com.example.projektr.activities.login
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -10,19 +11,26 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.projektr.R
+import com.example.projektr.activities.MainActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
-class RegisterActivity : AppCompatActivity() {
+class LoginActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
+
+    companion object {
+        private const val TAG = "LoginActivity"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_register)
+        setContentView(R.layout.activity_login)
 
         // inicijaliziraj FirebaseAuth
-        auth = FirebaseAuth.getInstance()
+        auth = Firebase.auth
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -32,14 +40,13 @@ class RegisterActivity : AppCompatActivity() {
 
 
         //moj kod
-        // pronadi polja za unos imena, e-maila i lozinke te gumb za registraciju
-        val nameField = findViewById<EditText>(R.id.name)
+        // Pronađi polja za unos e-maila i lozinke te gumb za prijavu
         val emailField = findViewById<EditText>(R.id.email)
         val passwordField = findViewById<EditText>(R.id.password)
-        val signUpButton = findViewById<Button>(R.id.login_btn)
+        val logInButton = findViewById<Button>(R.id.login_btn)
 
-        // postavi onClickListener za gumb "Sign Up"
-        signUpButton.setOnClickListener {
+        // postavi onClickListener za gumb "Log In"
+        logInButton.setOnClickListener {
             val email = emailField.text.toString().trim()
             val password = passwordField.text.toString().trim()
 
@@ -49,24 +56,23 @@ class RegisterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // registriraj korisnika
-            auth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener { task ->
+            // prijavi korisnika
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
-                        // User creation successful
-                        Toast.makeText(this, "User registered successfully", Toast.LENGTH_SHORT)
-                            .show()
-                        // Optionally, navigate to a different activity or perform other actions
-
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d(TAG, "signInWithEmail:success")
+                        val user = auth.currentUser
                         val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)
                         finish() // Optionally close the registration activity
                     } else {
-                        // If sign-up fails, display a message to the user
+                        // If sign in fails, display a message to the user.
+                        Log.w(TAG, "signInWithEmail:failure", task.exception)
                         Toast.makeText(
-                            this,
-                            "Registration failed: ${task.exception?.message}",
-                            Toast.LENGTH_SHORT
+                            baseContext,
+                            "Authentication failed.",
+                            Toast.LENGTH_SHORT,
                         ).show()
                     }
                 }

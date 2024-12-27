@@ -4,16 +4,18 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.projektr.data.Exercise
-import com.example.projektr.databinding.ListTemplateExerciseBinding
+import com.example.projektr.databinding.ListItemExerciseBinding
 
-class ExercisesTemplateAdapter(
+// za dodavanje u template
+
+class AddExerciseAdapter(
     private val exercises: List<Exercise>,
     private val onExerciseClick: (Exercise) -> Unit
-) : RecyclerView.Adapter<ExercisesTemplateAdapter.ExerciseViewHolder>() {
+) : RecyclerView.Adapter<AddExerciseAdapter.ExerciseViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExerciseViewHolder {
         val binding =
-            ListTemplateExerciseBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            ListItemExerciseBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ExerciseViewHolder(binding)
     }
 
@@ -27,7 +29,7 @@ class ExercisesTemplateAdapter(
 
     override fun getItemCount() = exercises.size
 
-    class ExerciseViewHolder(private val binding: ListTemplateExerciseBinding) :
+    class ExerciseViewHolder(private val binding: ListItemExerciseBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(exercise: Exercise) {
             binding.exerciseName.text = exercise.name

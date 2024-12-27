@@ -30,4 +30,5 @@
     <string name="finish">Finish</string>
     <string name="ok">OK</string>
     <string name="x">X</string>
+    <string name="select_exercise">Select an exercise</string>
 </resources>
