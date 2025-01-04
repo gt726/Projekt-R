@@ -4,16 +4,22 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.projektr.R
 import com.example.projektr.adapters.EditTemplateAdapter
 import com.example.projektr.data.ExerciseWithSets
+import com.example.projektr.database.AppDatabase
+import com.example.projektr.database.Template
+import com.example.projektr.database.TemplateExercise
+import kotlinx.coroutines.launch
 
 class EditTemplateActivity : AppCompatActivity() {
 
@@ -53,7 +59,7 @@ class EditTemplateActivity : AppCompatActivity() {
         }
 
         finishButton.setOnClickListener {
-            //saveTemplate(exerciseList)
+            saveTemplate(exerciseList)
         }
 
         addButton.setOnClickListener {
@@ -87,11 +93,45 @@ class EditTemplateActivity : AppCompatActivity() {
 
     private fun saveTemplate(exerciseList: List<ExerciseWithSets>) {
         // prikazi prompt za unos imena templatea
-//        val promptView = layoutInflater.inflate(R.layout.prompt_add_sets, null)
-//        val prompt = AlertDialog.Builder(this)
-//            .setView(promptView)
-//            .create()
-//        prompt.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        val promptView = layoutInflater.inflate(R.layout.prompt_template_name, null)
+        val prompt = AlertDialog.Builder(this)
+            .setView(promptView)
+            .create()
+        prompt.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        val templateName = promptView.findViewById<EditText>(R.id.name)
+        val okButton = promptView.findViewById<Button>(R.id.ok_button)
+        val cancelButton = promptView.findViewById<Button>(R.id.prompt_cancel_button)
+
+        cancelButton.setOnClickListener() {
+            prompt.dismiss()
+        }
+
+        okButton.setOnClickListener() {
+            val name = templateName.text.toString()
+            if (name.isNotBlank()) {
+                val db = AppDatabase.getDatabase(this)
+                lifecycleScope.launch {
+                    val templateId = db.templateDao().insertTemplate(Template(name = name))
+                    val exercises = exerciseList.map {
+                        TemplateExercise(
+                            templateId = templateId.toInt(),
+                            exerciseName = it.exercise.name,
+                            numberOfSets = it.numberOfSets
+                        )
+                    }
+                    db.templateDao().insertExercises(exercises)
+                    Toast.makeText(this@EditTemplateActivity, "Template saved!", Toast.LENGTH_SHORT)
+                        .show()
+                    prompt.dismiss()
+                    finish() // Close activity
+                }
+            } else {
+                Toast.makeText(this, "Please enter a template name", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        prompt.show()
     }
 
 }

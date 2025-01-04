@@ -1,7 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingVertical="20dp"
+    android:paddingHorizontal="55dp"
+    android:gravity="center_horizontal"
+    android:background="@drawable/prompt_background">
+
+    <TextView
+        android:id="@+id/template_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter template name"
+        android:fontFamily="@font/roboto_bold"
+        android:textSize="25sp"
+        android:textColor="@color/white" />
+
+    <EditText
+        android:id="@+id/name"
+        android:layout_width="180dp"
+        android:layout_height="wrap_content"
+        android:hint="Name"
+        android:textColorHint="#928E8E"
+        android:textColor="@color/white"
+        android:textAlignment="center"
+        android:background="@drawable/prompt_text_input"
+        android:inputType="text"
+        android:fontFamily="@font/roboto_regular"
+        android:textSize="20sp"
+        android:layout_marginTop="30dp"
+        android:paddingVertical="15dp"
+        android:paddingHorizontal="20dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="20dp">
+
+        <Button
+            android:id="@+id/prompt_cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"
+            android:textSize="18sp"
+            android:fontFamily="@font/roboto_regular"
+            android:textColor="@android:color/holo_red_light"
+            android:background="@android:color/transparent"
+            android:padding="0dp" />
 
 
+        <Button
+            android:id="@+id/ok_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ok"
+            android:textSize="18sp"
+            android:fontFamily="@font/roboto_regular"
+            android:textColor="#355CFF"
+            android:background="@android:color/transparent"
+            android:padding="0dp" />
+
+    </LinearLayout>
 </LinearLayout>
