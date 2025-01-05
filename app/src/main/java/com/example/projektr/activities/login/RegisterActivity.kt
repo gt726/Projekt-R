@@ -18,6 +18,7 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_register)
@@ -32,7 +33,6 @@ class RegisterActivity : AppCompatActivity() {
         }
 
 
-        //moj kod
         // pronadi polja za unos imena, e-maila i lozinke te gumb za registraciju
         val nameField = findViewById<EditText>(R.id.name)
         val emailField = findViewById<EditText>(R.id.email)
@@ -57,11 +57,11 @@ class RegisterActivity : AppCompatActivity() {
                         // User creation successful
                         Toast.makeText(this, "User registered successfully", Toast.LENGTH_SHORT)
                             .show()
-                        // Optionally, navigate to a different activity or perform other actions
 
+                        // zapocni MainActivity
                         val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)
-                        finish() // Optionally close the registration activity
+                        finish()
                     } else {
                         // If sign-up fails, display a message to the user
                         Toast.makeText(

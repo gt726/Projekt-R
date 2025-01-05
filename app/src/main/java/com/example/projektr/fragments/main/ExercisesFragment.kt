@@ -28,11 +28,11 @@ class ExercisesFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+
         val binding = FragmentExercisesBinding.inflate(inflater, container, false)
 
-
-        exercisesList = ExerciseList.list.sortedBy { it.name } // sortiraj vjezbe po imenu
+        // dohvati popis vjezbi i sortiraj ih po imenu
+        exercisesList = ExerciseList.list.sortedBy { it.name }
 
         recyclerView = binding.recyclerView // povezi xml
         adapter =

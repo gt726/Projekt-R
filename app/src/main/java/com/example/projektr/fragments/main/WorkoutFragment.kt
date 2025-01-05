@@ -19,48 +19,25 @@ import com.example.projektr.databinding.FragmentWorkoutBinding
 import kotlinx.coroutines.launch
 
 
-/**
- * A simple [Fragment] subclass.
- * Use the [WorkoutFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class WorkoutFragment : Fragment() {
 
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var binding: FragmentWorkoutBinding
 
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        arguments?.let {
-//            param1 = it.getString(ARG_PARAM1)
-//            param2 = it.getString(ARG_PARAM2)
-//        }
-//    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
-        val binding = FragmentWorkoutBinding.inflate(inflater, container, false)
+        // postavi binding
+        binding = FragmentWorkoutBinding.inflate(inflater, container, false)
         val recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        val createTemplateBtn =
-            binding.createTemplateButton
+        val createTemplateBtn = binding.createTemplateButton
 
 
-        val dummyData = listOf(
-            Template(1, "Template 1") to listOf(
-                TemplateExercise(1, 1, "Exercise A", 3),
-                TemplateExercise(2, 1, "Exercise B", 4)
-            ),
-            Template(2, "Template 2") to listOf(
-                TemplateExercise(3, 2, "Exercise C", 5)
-            )
-        )
-
-
+        // dohvati bazu podataka
         val db = AppDatabase.getDatabase(requireContext())
         Log.d("WorkoutFragment", "Database initialized: $db")
         lifecycleScope.launch {
@@ -68,25 +45,25 @@ class WorkoutFragment : Fragment() {
             val templatesWithExercises = templates.map { template ->
                 val exercises = db.templateDao().getExercisesForTemplate(template.id)
                 template to exercises
-            }
+            }.toMutableList()
             recyclerView.adapter = TemplateAdapter(templatesWithExercises, viewLifecycleOwner, db)
         }
 
+        // postavi onClickListener za gumb za kreiranje novog templatea
         createTemplateBtn.setOnClickListener {
             val intent = Intent(activity, AddExerciseActivity::class.java)
             startActivity(intent)
         }
 
+        // postavi onClickListener za ikonu postavki
         val settingsIcon = binding.settingsIcon
         settingsIcon.setOnClickListener {
             // pokreni SettingsActivity
             val intent = Intent(activity, SettingsActivity::class.java)
             startActivity(intent)
         }
-
-        // Inflate the layout for this fragment
-        return binding.root//inflater.inflate(R.layout.fragment_workout, container, false)
+        
+        return binding.root
     }
-
 
 }

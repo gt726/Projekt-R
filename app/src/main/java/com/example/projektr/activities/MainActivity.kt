@@ -12,11 +12,13 @@ import com.example.projektr.fragments.main.WorkoutFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
+        // dohvati traku za navigaciju
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -25,25 +27,29 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        // postavi listener za navigaciju
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
+                // odabran je Exercises
                 R.id.nav_exercises -> {
-                    // Navigate to Exercises Fragment
+
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, ExercisesFragment())
                         .commit()
                     true
                 }
 
+                // odabran je Workout
                 R.id.nav_workout -> {
-                    // Navigate to Workout Fragment
+
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, WorkoutFragment()).commit()
                     true
                 }
 
+                // odabran je History
                 R.id.nav_history -> {
-                    // Navigate to History Fragment
+
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, HistoryFragment()).commit()
                     true
@@ -53,7 +59,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Default fragment
+        // postavi default fragment na Workout
         if (savedInstanceState == null) {
             bottomNavigationView.selectedItemId = R.id.nav_workout
         }

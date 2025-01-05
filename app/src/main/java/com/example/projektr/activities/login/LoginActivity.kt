@@ -25,6 +25,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_login)
@@ -39,7 +40,6 @@ class LoginActivity : AppCompatActivity() {
         }
 
 
-        //moj kod
         // Pronađi polja za unos e-maila i lozinke te gumb za prijavu
         val emailField = findViewById<EditText>(R.id.email)
         val passwordField = findViewById<EditText>(R.id.password)
@@ -65,7 +65,7 @@ class LoginActivity : AppCompatActivity() {
                         val user = auth.currentUser
                         val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)
-                        finish() // Optionally close the registration activity
+                        finish()
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w(TAG, "signInWithEmail:failure", task.exception)

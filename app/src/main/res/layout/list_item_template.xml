@@ -14,7 +14,7 @@
         android:gravity="start|center_vertical">
 
         <TextView
-            android:id="@+id/templateName"
+            android:id="@+id/template_name"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
@@ -23,7 +23,7 @@
             android:textColor="@color/white" />
 
         <ImageView
-            android:id="@+id/overflowMenu"
+            android:id="@+id/overflow_menu"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_menu" />
@@ -31,7 +31,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/exerciseList"
+        android:id="@+id/exercise_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"

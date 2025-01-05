@@ -13,6 +13,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 class SettingsActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -23,8 +24,10 @@ class SettingsActivity : AppCompatActivity() {
             insets
         }
 
+        // dohvati gumb za odjavu
         val logOutButton = findViewById<Button>(R.id.log_out_btn)
 
+        // postavi listener na gumb za odjavu
         logOutButton.setOnClickListener {
             // odjavi korisnika
             Firebase.auth.signOut()

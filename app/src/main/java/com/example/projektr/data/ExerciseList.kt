@@ -1,6 +1,7 @@
 package com.example.projektr.data
 
 object ExerciseList {
+    // popis vjezbi u sustavu
     val list: MutableList<Exercise> = mutableListOf(
         Exercise("Push-up"),
         Exercise("Squat"),

@@ -19,18 +19,19 @@ import com.example.projektr.R
 import com.example.projektr.database.AppDatabase
 import com.example.projektr.database.Template
 import com.example.projektr.database.TemplateExercise
+import com.example.projektr.fragments.main.WorkoutFragment
 import kotlinx.coroutines.launch
 
 class TemplateAdapter(
-    private val templatesWithExercises: List<Pair<Template, List<TemplateExercise>>>,
+    private val templatesWithExercises: MutableList<Pair<Template, List<TemplateExercise>>>,
     private val lifecycleOwner: LifecycleOwner,
     private val db: AppDatabase
 ) : RecyclerView.Adapter<TemplateAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val templateName: TextView = view.findViewById(R.id.templateName)
-        val exerciseList: LinearLayout = view.findViewById(R.id.exerciseList)
-        val overflowMenu: ImageView = view.findViewById(R.id.overflowMenu)
+        val templateName: TextView = view.findViewById(R.id.template_name)
+        val exerciseList: LinearLayout = view.findViewById(R.id.exercise_list)
+        val overflowMenu: ImageView = view.findViewById(R.id.overflow_menu)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -52,36 +53,76 @@ class TemplateAdapter(
             holder.exerciseList.addView(textView)
         }
 
+        // OnClickListener za svaki template
+        holder.itemView.setOnClickListener {
+            // stvori novi prompt za potvrdu pokretanja templatea
+            val inflater = LayoutInflater.from(it.context)
+            val promptView = inflater.inflate(R.layout.prompt_start_workout, null)
+            val prompt = AlertDialog.Builder(it.context)
+                .setView(promptView)
+                .create()
+            prompt.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+            // dohvati elemente iz prompta
+            val templateName = promptView.findViewById<TextView>(R.id.template_name)
+            val noButton = promptView.findViewById<Button>(R.id.no_btn)
+            val yesButton = promptView.findViewById<Button>(R.id.yes_btn)
+
+            // postavi ime templatea
+            templateName.text = "\" ${template.name} \" ?"
+
+            // odustani
+            noButton.setOnClickListener {
+                prompt.dismiss()
+            }
+
+            // pokreni workout
+            yesButton.setOnClickListener {
+
+                Toast.makeText(it.context, "Started template: ${template.name}", Toast.LENGTH_SHORT)
+                    .show()
+                prompt.dismiss()
+            }
+
+            prompt.show()
+        }
+
         // postavi onClickListener za overflowMenu
         holder.overflowMenu.setOnClickListener { view ->
-            // Create and show the popup menu
+            // stvori novi popupMenu
             val popupMenu = PopupMenu(holder.itemView.context, view)
-            // Inflate the menu layout
             popupMenu.inflate(R.menu.template_list_menu)
 
             // postavi onClickListener za svaku opciju u meniu
             popupMenu.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
+                    // uredi template
                     R.id.menu_edit -> {
                         true
                     }
 
+                    // preimenuj template
                     R.id.menu_rename -> {
                         val inflater = LayoutInflater.from(view.context)
+                        // stvori novi prompt za unos imena templatea
                         val promptView = inflater.inflate(R.layout.prompt_template_name, null)
                         val prompt = AlertDialog.Builder(view.context)
                             .setView(promptView)
                             .create()
                         prompt.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
+                        // dohvati elemente iz prompta
                         val templateName = promptView.findViewById<EditText>(R.id.name)
                         val okButton = promptView.findViewById<Button>(R.id.ok_button)
                         val cancelButton =
                             promptView.findViewById<Button>(R.id.prompt_cancel_button)
 
+                        // odustani od preimenovanja
                         cancelButton.setOnClickListener() {
                             prompt.dismiss()
                         }
+
+                        // potvrdi preimenovanje
                         okButton.setOnClickListener() {
                             val name = templateName.text.toString()
                             if (name.isNotBlank()) {
@@ -90,7 +131,7 @@ class TemplateAdapter(
                                     // azuriraj ime templatea u bazi
                                     db.templateDao().renameTemplate(template.id, name)
                                 }
-                                // azuriraj ime templatea u listi
+                                // azuriraj ime templatea na popisu
                                 holder.templateName.text = name
                                 prompt.dismiss()
                             } else {
@@ -106,7 +147,21 @@ class TemplateAdapter(
                         true
                     }
 
+                    // izbrisi template
                     R.id.menu_delete -> {
+                        lifecycleOwner.lifecycleScope.launch {
+                            // izbrisi template iz baze
+                            db.templateDao().deleteTemplateAndExercises(template.id)
+
+                            if (position in templatesWithExercises.indices) { // provjeri poziciju
+                                templatesWithExercises.removeAt(position)
+                                notifyItemRemoved(position) // obavijesti adapter da je item izbrisan
+                                notifyItemRangeChanged(
+                                    position,
+                                    templatesWithExercises.size
+                                ) // obavijesti adapter da su se promijenile pozicije itema
+                            }
+                        }
                         true
                     }
 

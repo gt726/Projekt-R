@@ -9,29 +9,23 @@
     android:background="@drawable/prompt_background">
 
     <TextView
-        android:id="@+id/exercise_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Exercise name"
+        android:text="Would you like to start"
         android:fontFamily="@font/roboto_bold"
         android:textSize="25sp"
-        android:textColor="@color/white" />
-
-    <EditText
-        android:id="@+id/sets"
-        android:layout_width="180dp"
-        android:layout_height="wrap_content"
-        android:hint="Number of sets"
-        android:textColorHint="#928E8E"
         android:textColor="@color/white"
-        android:textAlignment="center"
-        android:background="@drawable/prompt_text_input"
-        android:inputType="number"
-        android:fontFamily="@font/roboto_regular"
-        android:textSize="20sp"
-        android:layout_marginTop="30dp"
-        android:paddingVertical="15dp"
-        android:paddingHorizontal="20dp" />
+        android:layout_marginTop="8dp" />
+
+    <TextView
+        android:id="@+id/template_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Template name?"
+        android:fontFamily="@font/roboto_bold"
+        android:textSize="25sp"
+        android:textColor="@color/white"
+        android:layout_marginTop="20dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -41,10 +35,10 @@
         android:layout_marginTop="20dp">
 
         <Button
-            android:id="@+id/prompt_cancel_button"
+            android:id="@+id/no_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/cancel"
+            android:text="No"
             android:textSize="18sp"
             android:fontFamily="@font/roboto_regular"
             android:textColor="@android:color/holo_red_light"
@@ -53,10 +47,10 @@
 
 
         <Button
-            android:id="@+id/ok_button"
+            android:id="@+id/yes_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/ok"
+            android:text="Yes"
             android:textSize="18sp"
             android:fontFamily="@font/roboto_regular"
             android:textColor="#355CFF"

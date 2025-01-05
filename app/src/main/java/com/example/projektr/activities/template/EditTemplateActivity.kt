@@ -14,7 +14,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.projektr.R
+import com.example.projektr.activities.MainActivity
 import com.example.projektr.adapters.EditTemplateAdapter
+import com.example.projektr.adapters.TemplateAdapter
 import com.example.projektr.data.ExerciseWithSets
 import com.example.projektr.database.AppDatabase
 import com.example.projektr.database.Template
@@ -25,9 +27,12 @@ class EditTemplateActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: EditTemplateAdapter
+
+    // popis odabranih vjezbi
     private val exerciseList = mutableListOf<ExerciseWithSets>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_edit_template)
@@ -37,6 +42,7 @@ class EditTemplateActivity : AppCompatActivity() {
             insets
         }
 
+        // dohvati popis vjezbi iz intenta
         val passedExercises =
             intent.getSerializableExtra("EXERCISES_LIST") as? ArrayList<ExerciseWithSets>
         if (passedExercises != null) {
@@ -44,24 +50,28 @@ class EditTemplateActivity : AppCompatActivity() {
             exerciseList.addAll(passedExercises)
         }
 
-        recyclerView = findViewById(R.id.exercisesRecyclerView)
+        // postavi adapter za recycler view
+        recyclerView = findViewById(R.id.exercises_recycler_view)
         adapter = EditTemplateAdapter(exerciseList, ::onRemoveClicked)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
+        // pronadi elemente
+        val addButton = findViewById<Button>(R.id.add_exercise_button)
+        val cancelButton = findViewById<Button>(R.id.cancel_button)
+        val finishButton = findViewById<Button>(R.id.finish_button)
 
-        val addButton = findViewById<Button>(R.id.addExerciseButton)
-        val cancelButton = findViewById<Button>(R.id.cancelButton)
-        val finishButton = findViewById<Button>(R.id.finishButton)
-
+        // odustani od kreiranja templatea
         cancelButton.setOnClickListener {
             finish()
         }
 
+        // zavrsi kreiranje templatea i pozovi funkciju za spremanje
         finishButton.setOnClickListener {
             saveTemplate(exerciseList)
         }
 
+        // dodaj novu vjezbu
         addButton.setOnClickListener {
             // otvori popis vjezbi
             val intent = Intent(this, AddExerciseActivity::class.java)
@@ -74,39 +84,47 @@ class EditTemplateActivity : AppCompatActivity() {
                     )
                 })
             )
+            // pokreni aktivnost za dodavanje nove vjezbe
             startActivity(intent)
             finish()
         }
     }
 
 
+    // funkcija za uklanjanje vjezbe s popisa
     private fun onRemoveClicked(position: Int) {
-        if (position in exerciseList.indices) { // Validate position
-            exerciseList.removeAt(position) // Remove the exercise
-            adapter.notifyItemRemoved(position) // Notify adapter of item removal
+        if (position in exerciseList.indices) { // provjeri poziciju
+            exerciseList.removeAt(position)
+            adapter.notifyItemRemoved(position) // obavijesti adapter da je vjezba uklonjena
+            // obavijesti adapter da se promijenio broj vjezbi
             adapter.notifyItemRangeChanged(
                 position,
                 exerciseList.size
-            ) // Notify adapter to refresh remaining items
+            )
         }
     }
 
+    // funkcija za spremanje templatea
     private fun saveTemplate(exerciseList: List<ExerciseWithSets>) {
         // prikazi prompt za unos imena templatea
         val promptView = layoutInflater.inflate(R.layout.prompt_template_name, null)
         val prompt = AlertDialog.Builder(this)
             .setView(promptView)
             .create()
+        //postavi transparentnu pozadinu
         prompt.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
+        // pronadi elemente prompta
         val templateName = promptView.findViewById<EditText>(R.id.name)
         val okButton = promptView.findViewById<Button>(R.id.ok_button)
         val cancelButton = promptView.findViewById<Button>(R.id.prompt_cancel_button)
 
+        // odustani i zatvori prompt
         cancelButton.setOnClickListener() {
             prompt.dismiss()
         }
 
+        // zapocni spremanje templatea
         okButton.setOnClickListener() {
             val name = templateName.text.toString()
             if (name.isNotBlank()) {
@@ -121,16 +139,25 @@ class EditTemplateActivity : AppCompatActivity() {
                         )
                     }
                     db.templateDao().insertExercises(exercises)
-                    Toast.makeText(this@EditTemplateActivity, "Template saved!", Toast.LENGTH_SHORT)
-                        .show()
+
+                    // javi korisniku da je template spremljen
+                    Toast.makeText(
+                        this@EditTemplateActivity,
+                        "Template created!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
                     prompt.dismiss()
-                    finish() // Close activity
+                    // osvjezi glavni ekran i zatvori trenutnu aktivnost
+                    val intent = Intent(this@EditTemplateActivity, MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    startActivity(intent)
+                    finish()
                 }
             } else {
                 Toast.makeText(this, "Please enter a template name", Toast.LENGTH_SHORT).show()
             }
         }
-
         prompt.show()
     }
 
