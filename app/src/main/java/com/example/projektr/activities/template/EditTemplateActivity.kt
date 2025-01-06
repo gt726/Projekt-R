@@ -2,8 +2,10 @@ package com.example.projektr.activities.template
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
@@ -17,6 +19,7 @@ import com.example.projektr.R
 import com.example.projektr.activities.MainActivity
 import com.example.projektr.adapters.EditTemplateAdapter
 import com.example.projektr.adapters.TemplateAdapter
+import com.example.projektr.data.Exercise
 import com.example.projektr.data.ExerciseWithSets
 import com.example.projektr.database.AppDatabase
 import com.example.projektr.database.Template
@@ -42,12 +45,33 @@ class EditTemplateActivity : AppCompatActivity() {
             insets
         }
 
-        // dohvati popis vjezbi iz intenta
-        val passedExercises =
-            intent.getSerializableExtra("EXERCISES_LIST") as? ArrayList<ExerciseWithSets>
-        if (passedExercises != null) {
-            //exerciseList.clear()
-            exerciseList.addAll(passedExercises)
+        // dohvati podatke iz intenta
+        val startMode = intent.getStringExtra("START_MODE") ?: ""
+        Log.d("EditTemplateActivity", "startMode: $startMode")
+        val existingTemplateId = intent.getIntExtra("TEMPLATE_ID", -1)
+        val loadFromDb = intent.getBooleanExtra("LOAD_FROM_DB", false)
+
+        // ako se stvara novi template
+        if (!loadFromDb) {
+            // dohvati popis vjezbi iz intenta
+            val passedExercises =
+                intent.getSerializableExtra("EXERCISES_LIST") as? ArrayList<ExerciseWithSets>
+            if (passedExercises != null) {
+                //exerciseList.clear()
+                exerciseList.addAll(passedExercises)
+            }
+        } else {
+            // inace dohvati popis vjezbi iz baze podataka
+            val db = AppDatabase.getDatabase(this)
+            lifecycleScope.launch {
+                val template = db.templateDao().getTemplateById(existingTemplateId)
+                val exercises = db.templateDao().getExercisesForTemplate(existingTemplateId)
+                exerciseList.clear()
+                exerciseList.addAll(exercises.map {
+                    ExerciseWithSets(Exercise(it.exerciseName), it.numberOfSets)
+                })
+                adapter.notifyDataSetChanged()
+            }
         }
 
         // postavi adapter za recycler view
@@ -57,9 +81,19 @@ class EditTemplateActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
 
         // pronadi elemente
+        val title = findViewById<TextView>(R.id.title)
         val addButton = findViewById<Button>(R.id.add_exercise_button)
         val cancelButton = findViewById<Button>(R.id.cancel_button)
         val finishButton = findViewById<Button>(R.id.finish_button)
+
+        // postavi naslov ako se ureduje postojeci template
+        if (startMode == "EDIT_EXISTING") {
+            val db = AppDatabase.getDatabase(this)
+            lifecycleScope.launch {
+                val template = db.templateDao().getTemplateById(existingTemplateId)
+                title.text = template.name
+            }
+        }
 
         // odustani od kreiranja templatea
         cancelButton.setOnClickListener {
@@ -68,7 +102,7 @@ class EditTemplateActivity : AppCompatActivity() {
 
         // zavrsi kreiranje templatea i pozovi funkciju za spremanje
         finishButton.setOnClickListener {
-            saveTemplate(exerciseList)
+            saveTemplate(exerciseList, startMode, existingTemplateId)
         }
 
         // dodaj novu vjezbu
@@ -84,6 +118,9 @@ class EditTemplateActivity : AppCompatActivity() {
                     )
                 })
             )
+            intent.putExtra("START_MODE", startMode)
+            //intent.putExtra("LOAD_FROM_DB", false)
+            intent.putExtra("TEMPLATE_ID", existingTemplateId)
             // pokreni aktivnost za dodavanje nove vjezbe
             startActivity(intent)
             finish()
@@ -105,7 +142,11 @@ class EditTemplateActivity : AppCompatActivity() {
     }
 
     // funkcija za spremanje templatea
-    private fun saveTemplate(exerciseList: List<ExerciseWithSets>) {
+    private fun saveTemplate(
+        exerciseList: List<ExerciseWithSets>,
+        startMode: String,
+        existingTemplateId: Int
+    ) {
         // prikazi prompt za unos imena templatea
         val promptView = layoutInflater.inflate(R.layout.prompt_template_name, null)
         val prompt = AlertDialog.Builder(this)
@@ -119,6 +160,18 @@ class EditTemplateActivity : AppCompatActivity() {
         val okButton = promptView.findViewById<Button>(R.id.ok_button)
         val cancelButton = promptView.findViewById<Button>(R.id.prompt_cancel_button)
 
+        // ako se ureduje postojeci template, unesi ime u prompt
+        if (startMode == "EDIT_EXISTING") {
+            val db = AppDatabase.getDatabase(this)
+            lifecycleScope.launch {
+                val template = db.templateDao().getTemplateById(existingTemplateId)
+                templateName.setText(template.name)
+                // highlightaj tekst td user moze samo poceti tipkati
+                templateName.setSelection(0, template.name.length)
+            }
+        }
+        templateName.requestFocus()
+
         // odustani i zatvori prompt
         cancelButton.setOnClickListener() {
             prompt.dismiss()
@@ -130,22 +183,42 @@ class EditTemplateActivity : AppCompatActivity() {
             if (name.isNotBlank()) {
                 val db = AppDatabase.getDatabase(this)
                 lifecycleScope.launch {
-                    val templateId = db.templateDao().insertTemplate(Template(name = name))
-                    val exercises = exerciseList.map {
-                        TemplateExercise(
-                            templateId = templateId.toInt(),
-                            exerciseName = it.exercise.name,
-                            numberOfSets = it.numberOfSets
-                        )
+                    // ako se ureduje postojeci template
+                    if (startMode == "EDIT_EXISTING") {
+                        db.templateDao().renameTemplate(existingTemplateId, name)
+                        db.templateDao().deleteExercisesForTemplate(existingTemplateId)
+                        db.templateDao().insertExercises(exerciseList.map {
+                            TemplateExercise(
+                                templateId = existingTemplateId,
+                                exerciseName = it.exercise.name,
+                                numberOfSets = it.numberOfSets
+                            )
+                        })
+                        Toast.makeText(
+                            this@EditTemplateActivity,
+                            "Template updated!",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
-                    db.templateDao().insertExercises(exercises)
+                    // inace stvori novi template
+                    else {
+                        val templateId = db.templateDao().insertTemplate(Template(name = name))
+                        val exercises = exerciseList.map {
+                            TemplateExercise(
+                                templateId = templateId.toInt(),
+                                exerciseName = it.exercise.name,
+                                numberOfSets = it.numberOfSets
+                            )
+                        }
+                        db.templateDao().insertExercises(exercises)
 
-                    // javi korisniku da je template spremljen
-                    Toast.makeText(
-                        this@EditTemplateActivity,
-                        "Template created!",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                        // javi korisniku da je template spremljen
+                        Toast.makeText(
+                            this@EditTemplateActivity,
+                            "Template created!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
 
                     prompt.dismiss()
                     // osvjezi glavni ekran i zatvori trenutnu aktivnost

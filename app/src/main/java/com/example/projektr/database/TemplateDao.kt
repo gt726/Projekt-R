@@ -18,6 +18,10 @@ interface TemplateDao {
     @Query("SELECT * FROM Template")
     suspend fun getTemplates(): List<Template>
 
+    // dohvati template po id-u
+    @Query("SELECT * FROM Template WHERE id = :templateId")
+    suspend fun getTemplateById(templateId: Int): Template
+
     // dohvati sve vjezbe za template
     @Query("SELECT * FROM TemplateExercise WHERE templateId = :templateId")
     suspend fun getExercisesForTemplate(templateId: Int): List<TemplateExercise>

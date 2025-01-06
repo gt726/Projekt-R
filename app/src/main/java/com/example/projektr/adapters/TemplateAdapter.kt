@@ -1,5 +1,6 @@
 package com.example.projektr.adapters
 
+import android.content.Intent
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +17,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.example.projektr.R
+import com.example.projektr.activities.template.EditTemplateActivity
 import com.example.projektr.database.AppDatabase
 import com.example.projektr.database.Template
 import com.example.projektr.database.TemplateExercise
@@ -98,6 +100,15 @@ class TemplateAdapter(
                 when (item.itemId) {
                     // uredi template
                     R.id.menu_edit -> {
+                        val context = holder.itemView.context
+                        // posalji template id i javi da se ureduje postojeci template
+                        val intent = Intent(context, EditTemplateActivity::class.java).apply {
+                            putExtra("TEMPLATE_ID", template.id)
+                            putExtra("START_MODE", "EDIT_EXISTING")
+                            putExtra("LOAD_FROM_DB", true)
+                        }
+                        // pokreni EditTemplateActivity
+                        context.startActivity(intent)
                         true
                     }
 
@@ -116,6 +127,8 @@ class TemplateAdapter(
                         val okButton = promptView.findViewById<Button>(R.id.ok_button)
                         val cancelButton =
                             promptView.findViewById<Button>(R.id.prompt_cancel_button)
+
+                        templateName.requestFocus()
 
                         // odustani od preimenovanja
                         cancelButton.setOnClickListener() {

@@ -52,6 +52,7 @@ class WorkoutFragment : Fragment() {
         // postavi onClickListener za gumb za kreiranje novog templatea
         createTemplateBtn.setOnClickListener {
             val intent = Intent(activity, AddExerciseActivity::class.java)
+            intent.putExtra("START_MODE", "CREATE_NEW")
             startActivity(intent)
         }
 
@@ -62,7 +63,7 @@ class WorkoutFragment : Fragment() {
             val intent = Intent(activity, SettingsActivity::class.java)
             startActivity(intent)
         }
-        
+
         return binding.root
     }
 

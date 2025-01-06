@@ -2,6 +2,7 @@ package com.example.projektr.activities.template
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -23,10 +24,11 @@ import com.example.projektr.databinding.ActivityAddExerciseBinding
 
 class AddExerciseActivity : AppCompatActivity() {
 
-    private lateinit var exerciseList: List<Exercise>  // popis vjezbi za template
+    private lateinit var exerciseList: List<Exercise>  // popis svih vjezbi u sustavu
     private lateinit var recyclerView: RecyclerView // prikaz vjezbi
     private lateinit var adapter: AddExerciseAdapter  // povezivanje podataka s prikazom
-    private val selectedExercises = mutableListOf<ExerciseWithSets>() // testni popis
+    private val selectedExercises = mutableListOf<ExerciseWithSets>() // popis odabranih vjezbi
+
 //    private val selectedExercises = mutableListOf<ExerciseWithSets>(
 //        ExerciseWithSets(Exercise("Push-up"), 1),
 //        ExerciseWithSets(Exercise("Squat"), 2),
@@ -34,7 +36,7 @@ class AddExerciseActivity : AppCompatActivity() {
 //        ExerciseWithSets(Exercise("Lunges"), 4),
 //        ExerciseWithSets(Exercise("Jumping Jacks"), 5),
 //        ExerciseWithSets(Exercise("Burpees"), 6)
-//    ) // odabrane vjezbe
+//    ) // testni popis
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -57,6 +59,12 @@ class AddExerciseActivity : AppCompatActivity() {
             selectedExercises.addAll(passedExercises)
         }
 
+        // dohvati podatke iz intenta
+        val startMode = intent.getStringExtra("START_MODE") ?: ""
+        Log.d("AddExerciseActivity", "startMode: $startMode")
+
+        val existingTemplateId = intent.getIntExtra("TEMPLATE_ID", -1)
+
         // sortiraj vjezbe abecedno
         exerciseList = ExerciseList.list.sortedBy { it.name }
 
@@ -64,11 +72,17 @@ class AddExerciseActivity : AppCompatActivity() {
         recyclerView = binding.exercisesRecyclerView
         //stvori novu instancu adaptera i predaj mu popis vjezbi kao argument
         adapter =
-            AddExerciseAdapter(exerciseList) { exercise -> addSetsPrompt(exercise) }
+            AddExerciseAdapter(exerciseList) { exercise ->
+                addSetsPrompt(
+                    exercise,
+                    startMode,
+                    existingTemplateId
+                )
+            }
         recyclerView.layoutManager = LinearLayoutManager(this) // postavi layout manager
         recyclerView.adapter = adapter // postavi adapter za recyclerView
 
-        // onClickListener za gumb za cancel button
+        // onClickListener za cancel button
         findViewById<Button>(R.id.cancel_button).setOnClickListener {
             // ako je popis prazan, vrati se na MainActivity, inace se vrati na EditTemplateActivity
             val intent: Intent
@@ -83,6 +97,10 @@ class AddExerciseActivity : AppCompatActivity() {
                         )
                     })
                 )
+                // posalji potrebne detalje
+                intent.putExtra("START_MODE", startMode)
+                intent.putExtra("LOAD_FROM_DB", false)
+                intent.putExtra("TEMPLATE_ID", existingTemplateId)
             } else {
                 intent = Intent(this, MainActivity::class.java)
             }
@@ -93,7 +111,7 @@ class AddExerciseActivity : AppCompatActivity() {
     }
 
     // funkcija za pop up window za dodavanje broja setova
-    private fun addSetsPrompt(exercise: Exercise) {
+    private fun addSetsPrompt(exercise: Exercise, startMode: String, existingTemplateId: Int) {
         val promptView = layoutInflater.inflate(R.layout.prompt_add_sets, null)
         val prompt = AlertDialog.Builder(this).setView(promptView).create()
         // postavi transparentnu pozadinu
@@ -107,6 +125,8 @@ class AddExerciseActivity : AppCompatActivity() {
 
         // postavi ime vjezbe u popup
         exerciseName.text = exercise.name
+
+        numberOfSets.requestFocus()
 
         // zatvori popup
         cancelButton.setOnClickListener() {
@@ -132,6 +152,10 @@ class AddExerciseActivity : AppCompatActivity() {
                         )
                     })
                 )
+                // posalji potrebne detalje
+                intent.putExtra("START_MODE", startMode)
+                intent.putExtra("LOAD_FROM_DB", false)
+                intent.putExtra("TEMPLATE_ID", existingTemplateId)
                 // pokreni novi activity i zatvori trenutni
                 startActivity(intent)
                 finish()
