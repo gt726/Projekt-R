@@ -8,7 +8,7 @@
     tools:context=".activities.ActiveWorkoutActivity"
     android:background="#242424"
     android:paddingVertical="15dp"
-    android:paddingHorizontal="20dp"
+
     android:orientation="vertical">
 
     <LinearLayout
@@ -16,7 +16,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_gravity="center_vertical|start"
-        android:paddingTop="5dp">
+        android:paddingTop="5dp"
+        android:paddingHorizontal="20dp">
 
         <TextView
             android:id="@+id/title"

@@ -17,6 +17,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.example.projektr.R
+import com.example.projektr.activities.ActiveWorkoutActivity
 import com.example.projektr.activities.template.EditTemplateActivity
 import com.example.projektr.database.AppDatabase
 import com.example.projektr.database.Template
@@ -80,6 +81,10 @@ class TemplateAdapter(
 
             // pokreni workout
             yesButton.setOnClickListener {
+
+                val intent = Intent(it.context, ActiveWorkoutActivity::class.java)
+                intent.putExtra("TEMPLATE_ID", template.id)
+                it.context.startActivity(intent)
 
                 Toast.makeText(it.context, "Started template: ${template.name}", Toast.LENGTH_SHORT)
                     .show()

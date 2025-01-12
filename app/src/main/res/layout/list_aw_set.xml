@@ -3,9 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="10dp"
-    android:background="#242424"
-    android:layout_marginBottom="10dp">
+    android:paddingVertical="5dp"
+    android:background="#242424">
 
     <TextView
         android:id="@+id/set_number"
@@ -28,6 +27,7 @@
         android:background="@drawable/text_input"
         android:fontFamily="@font/roboto_regular"
         android:hint="---"
+        android:inputType="number"
         android:paddingHorizontal="5dp"
         android:paddingVertical="8dp"
         android:textAlignment="center"
@@ -42,6 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:hint="---"
+        android:inputType="number"
         android:fontFamily="@font/roboto_regular"
         android:textColor="@color/white"
         android:textColorHint="#C5C5C5"
@@ -52,8 +53,8 @@
         android:background="@drawable/text_input"
         android:layout_marginHorizontal="10dp" />
 
-    <TextView
-        android:id="@+id/check"
+    <Button
+        android:id="@+id/check_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -62,6 +63,7 @@
         android:textColor="#12D512"
         android:textSize="18sp"
         android:padding="5dp"
-        android:textAlignment="center" />
+        android:textAlignment="center"
+        android:background="@android:color/transparent" />
 
 </LinearLayout>
