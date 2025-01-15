@@ -6,7 +6,6 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
@@ -14,10 +13,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.projektr.R
 import com.example.projektr.adapters.AWExerciseAdapter
-import com.example.projektr.adapters.EditTemplateAdapter
 import com.example.projektr.data.Exercise
 import com.example.projektr.data.ExerciseWithSets
 import com.example.projektr.database.AppDatabase
+import com.example.projektr.database.FinishedWorkout
+import com.example.projektr.database.FinishedWorkoutExercise
 import kotlinx.coroutines.launch
 
 class ActiveWorkoutActivity : AppCompatActivity() {
@@ -73,7 +73,62 @@ class ActiveWorkoutActivity : AppCompatActivity() {
 
         // zavrsi trening
         finishButton.setOnClickListener {
+            lifecycleScope.launch {
+                val activeWorkoutDao = db.finishedWorkoutDao()
 
+                // stvori novi FinishedWorkout
+                val workout = FinishedWorkout(
+                    workoutName = title.text.toString(),
+                    date = System.currentTimeMillis()
+                )
+                val workoutId = activeWorkoutDao.insertWorkout(workout)
+
+                // dohvati sve setove iz adaptera
+                val allSetsData = adapter.getAllSetsData()
+                var workoutEmpty = true
+                val workoutExercises = mutableListOf<FinishedWorkoutExercise>()
+
+                // za svaku vjezbu, stvori FinishedWorkoutExercise
+                for ((exerciseName, sets) in allSetsData) {
+                    val validSets = sets.filter { it.first.isNotEmpty() && it.second.isNotEmpty() }
+
+                    if (validSets.isNotEmpty()) {
+                        workoutEmpty = false
+                        var allWeights = ""
+                        var allReps = ""
+
+                        validSets.forEach { (weight, reps) ->
+                            allWeights += "$weight,"
+                            allReps += "$reps,"
+                        }
+
+                        val finishedExercise = FinishedWorkoutExercise(
+                            workoutId = workoutId.toInt(),
+                            exerciseName = exerciseName,
+                            weights = allWeights,
+                            reps = allReps,
+                            numberOfSets = validSets.size
+                        )
+                        workoutExercises.add(finishedExercise)
+                    }
+
+                    Log.d(
+                        "ActiveWorkoutActivity",
+                        "Exercise: $exerciseName,Number of sets: ${validSets.size} ,Sets: $validSets"
+                    )
+                }
+
+                if (!workoutEmpty) {
+                    // spremi vjezbe u bazu
+                    activeWorkoutDao.insertWorkoutExercises(workoutExercises)
+                    Log.d("ActiveWorkoutActivity", "Workout saved successfully with ID: $workoutId")
+                } else {
+                    // ako nema ispunjenih vjezbi, izbrisi finished workout
+                    Log.d("ActiveWorkoutActivity", "Workout not saved. No valid exercises.")
+                    activeWorkoutDao.deleteWorkoutById(workoutId.toInt())
+                }
+                finish()
+            }
         }
     }
 }
