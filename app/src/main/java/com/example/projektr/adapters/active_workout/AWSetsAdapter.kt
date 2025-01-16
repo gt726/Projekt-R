@@ -1,4 +1,4 @@
-package com.example.projektr.adapters
+package com.example.projektr.adapters.active_workout
 
 import android.graphics.Color
 import android.text.TextWatcher

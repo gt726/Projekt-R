@@ -16,6 +16,18 @@ interface FinishedWorkoutDao {
     @Insert
     suspend fun insertWorkoutExercises(exercises: List<FinishedWorkoutExercise>)
 
+    // dohvati sve zavrsene workoutove
+    @Query("SELECT * FROM FinishedWorkout")
+    suspend fun getWorkouts(): List<FinishedWorkout>
+
+    // dohvati zavrseni workout po id-u
+    @Query("SELECT * FROM FinishedWorkout WHERE id = :workoutId")
+    suspend fun getWorkoutById(workoutId: Int): FinishedWorkout
+
+    // dohvati sve vjezbe za zavrseni workout
+    @Query("SELECT * FROM FinishedWorkoutExercise WHERE workoutId = :workoutId")
+    suspend fun getExercisesForWorkout(workoutId: Int): List<FinishedWorkoutExercise>
+
     // izbrisi sve vjezbe za zavrseni workout
     @Query("DELETE FROM FinishedWorkoutExercise WHERE workoutId = :workoutId")
     suspend fun deleteExercisesByWorkoutId(workoutId: Int)

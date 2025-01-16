@@ -1,4 +1,4 @@
-package com.example.projektr.adapters
+package com.example.projektr.adapters.active_workout
 
 import android.util.Log
 import android.view.LayoutInflater

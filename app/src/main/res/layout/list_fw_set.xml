@@ -1,0 +1,56 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingVertical="5dp"
+    android:background="#242424">
+
+    <TextView
+        android:id="@+id/set_number"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="1"
+        android:fontFamily="@font/roboto_bold"
+        android:textColor="#355CFF"
+        android:textSize="18sp"
+        android:padding="5dp"
+        android:textAlignment="center" />
+
+    <TextView
+        android:id="@+id/weight"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_weight="1"
+        android:fontFamily="@font/roboto_regular"
+        android:paddingHorizontal="5dp"
+        android:paddingVertical="8dp"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:text="55" />
+
+    <TextView
+        android:id="@+id/reps"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:fontFamily="@font/roboto_regular"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:paddingHorizontal="5dp"
+        android:paddingVertical="8dp"
+        android:textAlignment="center"
+        android:layout_marginHorizontal="10dp"
+        android:text="12" />
+
+    <View
+        android:id="@+id/check_button"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:padding="5dp" />
+
+</LinearLayout>
