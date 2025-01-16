@@ -9,7 +9,8 @@
 
     <TextView
         android:id="@+id/exercise_name"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="10"
         android:layout_height="wrap_content"
 
 
@@ -19,15 +20,12 @@
         android:textColor="@color/white"
         android:textSize="18sp" />
 
-    <View
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
 
     <EditText
         android:id="@+id/sets"
         android:background="@drawable/text_input"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="3"
         android:layout_height="wrap_content"
         android:hint="Sets"
         android:fontFamily="@font/roboto_regular"
@@ -41,7 +39,8 @@
 
     <Button
         android:id="@+id/remove_button"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="2"
         android:layout_height="wrap_content"
         android:text="@string/x"
         android:textSize="16sp"
