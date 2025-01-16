@@ -14,8 +14,5 @@ Na taj način korisnik jednostavno može unijeti u aplikaciju koje vježbe je ra
 te ima uvid u svoju povijest vježbi. Predviđeno trajanje projekta je oko dva mjeseca.
 
 ## Upute za preuzimanje/instalaciju
-Završetkom izrade aplikacije bit će izrađen .apk file koji se prebaci na mobitel i omogućuje jednostavnu instalaciju
-aplikacije na uređaj. Budući da je aplikacija još uvijek u razvoju potrebno je preuzeti cijeli repozitorij i otvoriti ga kao 
-projekt u programu Android Studio. Prilikom instalacije Android Studia potrebno je odabrati i opciju za instalaciju 
-Android Emulatora ili ga samostalno kasnije instalirati kako bi imali pristup virtualnom Android uređaju. 
-Nakon toga u Android Studiu klinuti "Build" i aplikacija bi se trebala instalirati na virtualni uređaj i pokrenuti.
+Potrebno je preuzeti .apk datoteku naziva "app-debug" koja se nalazi [ovdje](https://github.com/gt726/Projekt-R/releases).
+Nakon toga tu datoteku treba pokrenuti na mobitelu i slijediti prikazane korake za instalaciju.
