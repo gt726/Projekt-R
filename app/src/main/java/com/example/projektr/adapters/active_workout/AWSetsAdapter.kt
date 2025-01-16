@@ -5,9 +5,12 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
+import com.example.projektr.R
 import com.example.projektr.databinding.ListAwSetBinding
+
 
 class SetsAdapter(
     private var numberOfSets: Int
@@ -94,8 +97,12 @@ class SetsAdapter(
                 if (currentColor != Color.parseColor("#242424")) {
                     // postavi background na default
                     binding.root.setBackgroundColor(Color.parseColor("#242424"))
-                    binding.weight.setBackgroundColor(Color.parseColor("#AD6A6A6A"))
-                    binding.reps.setBackgroundColor(Color.parseColor("#AD6A6A6A"))
+                    binding.weight.background =
+                        ContextCompat.getDrawable(binding.root.context, R.drawable.text_input)
+                    binding.reps.background =
+                        ContextCompat.getDrawable(binding.root.context, R.drawable.text_input)
+                    //binding.weight.setBackgroundColor(Color.parseColor("#AD6A6A6A"))
+                    //binding.reps.setBackgroundColor(Color.parseColor("#AD6A6A6A"))
                 }
             }
         }

@@ -19,8 +19,9 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:textSize="18sp"
-            android:fontFamily="@font/roboto_bold"
-            android:textColor="@color/white" />
+            android:fontFamily="@font/roboto_medium"
+            android:textColor="@color/white"
+            android:text="Template" />
 
         <ImageView
             android:id="@+id/overflow_menu"
@@ -35,5 +36,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingTop="8dp" />
+        android:paddingTop="5dp" />
 </LinearLayout>

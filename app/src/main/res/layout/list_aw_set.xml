@@ -12,9 +12,9 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="1"
-        android:fontFamily="@font/roboto_bold"
+        android:fontFamily="@font/roboto_medium"
         android:textColor="#355CFF"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:padding="5dp"
         android:textAlignment="center" />
 
@@ -29,11 +29,11 @@
         android:hint="---"
         android:inputType="number"
         android:paddingHorizontal="5dp"
-        android:paddingVertical="8dp"
+        android:paddingVertical="6dp"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textColorHint="#C5C5C5"
-        android:textSize="18sp"
+        android:textSize="16sp"
         tools:ignore="TouchTargetSizeCheck" />
 
     <EditText
@@ -46,9 +46,9 @@
         android:fontFamily="@font/roboto_regular"
         android:textColor="@color/white"
         android:textColorHint="#C5C5C5"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:paddingHorizontal="5dp"
-        android:paddingVertical="8dp"
+        android:paddingVertical="6dp"
         android:textAlignment="center"
         android:background="@drawable/text_input"
         android:layout_marginHorizontal="10dp" />
@@ -59,9 +59,9 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="✔"
-        android:fontFamily="@font/roboto_bold"
+        android:fontFamily="@font/roboto_medium"
         android:textColor="#12D512"
-        android:textSize="18sp"
+        android:textSize="14sp"
         android:padding="5dp"
         android:textAlignment="center"
         android:background="@android:color/transparent" />

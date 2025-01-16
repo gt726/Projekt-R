@@ -72,7 +72,7 @@ class TemplateAdapter(
             val yesButton = promptView.findViewById<Button>(R.id.yes_btn)
 
             // postavi ime templatea
-            templateName.text = "\" ${template.name} \" ?"
+            templateName.text = "\" ${template.name} ?\""
 
             // odustani
             noButton.setOnClickListener {

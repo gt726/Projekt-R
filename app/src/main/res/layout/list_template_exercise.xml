@@ -3,7 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="16dp">
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="10dp"
+    android:background="#242424">
 
     <TextView
         android:id="@+id/exercise_name"
@@ -11,11 +13,11 @@
         android:layout_height="wrap_content"
 
 
-        android:padding="6dp"
+        android:padding="3dp"
         android:text="Exercise Name"
-        android:fontFamily="@font/roboto_bold"
+        android:fontFamily="@font/roboto_medium"
         android:textColor="@color/white"
-        android:textSize="20sp" />
+        android:textSize="18sp" />
 
     <View
         android:layout_width="0dp"
@@ -24,16 +26,17 @@
 
     <EditText
         android:id="@+id/sets"
-        android:background="@drawable/prompt_text_input"
+        android:background="@drawable/text_input"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:hint="Sets"
         android:fontFamily="@font/roboto_regular"
         android:textColor="@color/white"
+        android:textColorHint="#C5C5C5"
         android:textSize="16sp"
         android:textAlignment="center"
         android:paddingHorizontal="20dp"
-        android:paddingVertical="14dp"
+        android:paddingVertical="8dp"
         android:inputType="number" />
 
     <Button
@@ -41,8 +44,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/x"
-        android:textSize="20sp"
-        android:fontFamily="@font/roboto_bold"
+        android:textSize="16sp"
+        android:fontFamily="@font/roboto_medium"
         android:textColor="@android:color/holo_red_light"
         android:background="@android:color/transparent"
         android:padding="0dp" />

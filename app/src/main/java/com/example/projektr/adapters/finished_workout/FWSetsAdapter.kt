@@ -30,8 +30,8 @@ class FWSetsAdapter(
         fun bind(setNumber: Int, weight: String, reps: String) {
             // postavi redni broj seta i podatke
             binding.setNumber.text = setNumber.toString()
-            binding.weight.text = weight
-            binding.reps.text = reps
+            binding.weight.text = weight + " kg x " + reps
+            //binding.reps.text = reps
         }
     }
 }

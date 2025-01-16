@@ -17,13 +17,14 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/roboto_bold"
+            android:fontFamily="@font/roboto_medium"
             android:textAlignment="viewStart"
             android:textColor="@color/white"
-            android:textSize="30sp"
+            android:textSize="28sp"
             android:text="@string/exercises"
-            android:paddingVertical="15dp"
-            android:paddingHorizontal="20dp" />
+            android:paddingTop="15dp"
+            android:paddingBottom="5dp"
+            android:paddingHorizontal="12dp" />
 
         <ImageView
             android:id="@+id/settings_icon"

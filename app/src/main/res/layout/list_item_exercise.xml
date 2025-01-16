@@ -11,9 +11,9 @@
         android:layout_height="wrap_content"
 
 
-        android:padding="6dp"
+        android:padding="3dp"
         android:text="Exercise Name"
-        android:fontFamily="@font/roboto_bold"
+        android:fontFamily="@font/roboto_medium"
         android:textColor="@color/white"
-        android:textSize="20sp" />
+        android:textSize="18sp" />
 </LinearLayout>
