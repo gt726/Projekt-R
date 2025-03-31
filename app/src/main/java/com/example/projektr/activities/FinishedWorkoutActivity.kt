@@ -10,10 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.projektr.R
-import com.example.projektr.adapters.active_workout.AWExerciseAdapter
 import com.example.projektr.adapters.finished_workout.FWExerciseAdapter
-import com.example.projektr.data.Exercise
-import com.example.projektr.data.ExerciseWithSets
 import com.example.projektr.database.AppDatabase
 import com.example.projektr.database.FinishedWorkoutExercise
 import kotlinx.coroutines.launch

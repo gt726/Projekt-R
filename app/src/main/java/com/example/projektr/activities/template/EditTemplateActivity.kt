@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.projektr.R
 import com.example.projektr.activities.MainActivity
 import com.example.projektr.adapters.EditTemplateAdapter
-import com.example.projektr.adapters.TemplateAdapter
 import com.example.projektr.data.Exercise
 import com.example.projektr.data.ExerciseWithSets
 import com.example.projektr.database.AppDatabase

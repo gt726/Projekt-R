@@ -22,7 +22,6 @@ import com.example.projektr.activities.template.EditTemplateActivity
 import com.example.projektr.database.AppDatabase
 import com.example.projektr.database.Template
 import com.example.projektr.database.TemplateExercise
-import com.example.projektr.fragments.main.WorkoutFragment
 import kotlinx.coroutines.launch
 
 class TemplateAdapter(

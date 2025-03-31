@@ -3,18 +3,16 @@ package com.example.projektr.fragments.main
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.projektr.activities.template.AddExerciseActivity
 import com.example.projektr.activities.SettingsActivity
+import com.example.projektr.activities.template.AddExerciseActivity
 import com.example.projektr.adapters.TemplateAdapter
 import com.example.projektr.database.AppDatabase
-import com.example.projektr.database.Template
-import com.example.projektr.database.TemplateExercise
 import com.example.projektr.databinding.FragmentWorkoutBinding
 import kotlinx.coroutines.launch
 
