@@ -57,4 +57,8 @@ interface FinishedWorkoutDao {
         deleteAllExercises()
         deleteAllWorkouts()
     }
+
+    // dohvati sve setove za odredenu vjezbu
+    @Query("SELECT * FROM FinishedWorkoutExercise WHERE exerciseName = :exerciseName")
+    suspend fun getAllEntriesForExercise(exerciseName: String): List<FinishedWorkoutExercise>
 }

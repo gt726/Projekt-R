@@ -35,7 +35,10 @@ class ExercisesFragment : Fragment() {
 
         recyclerView = binding.recyclerView // povezi xml
         adapter =
-            ExercisesAdapter(exercisesList) //stvori novu instancu adaptera i predaj mu popis vjezbi kao argument
+            ExercisesAdapter(
+                requireContext(),
+                exercisesList
+            ) //stvori novu instancu adaptera i predaj mu popis vjezbi kao argument
         recyclerView.layoutManager = LinearLayoutManager(context) // postavi layout manager
         recyclerView.adapter = adapter // postavi adapter za recyclerView
 
