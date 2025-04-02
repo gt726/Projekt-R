@@ -1,18 +1,27 @@
 package com.example.projektr.activities
 
+import android.graphics.Color
 import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.projektr.R
 import com.example.projektr.database.AppDatabase
 import com.example.projektr.database.FinishedWorkoutExercise
-import kotlinx.coroutines.Dispatchers
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.ValueFormatter
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class ExerciseDetailActivity : AppCompatActivity() {
 
@@ -44,18 +53,21 @@ class ExerciseDetailActivity : AppCompatActivity() {
         db = AppDatabase.getDatabase(this)
 
         lifecycleScope.launch {
+            // dohvati sve zavrsene workoutove za tu vjezbu
             val entries = db.finishedWorkoutDao().getAllEntriesForExercise(exerciseName)
             val maxWeightValue: String
             val maxSetValue: String
             val maxSessionValue: String
 
             if (entries.isNotEmpty()) {
+                // izracunaj trazene vrijednosti
                 maxWeightValue = getMaxWeight(entries).toString()
                 maxSetValue = getBestSet(entries)
                 maxSessionValue = getBestSession(entries)
 
 
             } else {
+                // default vrijednosti
                 maxWeightValue = "---"
                 maxSetValue = "--- kg x --- reps"
                 maxSessionValue = "--- kg"
@@ -63,10 +75,137 @@ class ExerciseDetailActivity : AppCompatActivity() {
             maxWeight.text = "$maxWeightValue kg"
             maxSetVolume.text = "$maxSetValue"
             maxSessionVolume.text = "$maxSessionValue"
+
+
+            // max weight
+            val maxWeightChart: LineChart = findViewById(R.id.max_weight_chart)
+            val maxWeightEntries = getWeightHistory(entries, "maxWeight")
+            if (maxWeightEntries.isEmpty()) {
+                // ispisi "No Data" ako nema podataka
+                maxWeightChart.setNoDataText("No Data Available")
+                maxWeightChart.setNoDataTextColor(Color.WHITE)  // boja teksta
+            } else {
+                setupLineChart(maxWeightEntries, maxWeightChart)
+            }
+
+            // best set
+            val bestSetChart: LineChart = findViewById(R.id.best_set_chart)
+            val bestSetEntries = getWeightHistory(entries, "bestSet")
+            if (bestSetEntries.isEmpty()) {
+                // ispisi "No Data" ako nema podataka
+                bestSetChart.setNoDataText("No Data Available")
+                bestSetChart.setNoDataTextColor(Color.WHITE)  // boja teksta
+            } else {
+                setupLineChart(bestSetEntries, bestSetChart)
+            }
+
+            // session volume
+            val sessionVolumeChart: LineChart = findViewById(R.id.session_volume_chart)
+            val sessionVolumeEntries = getWeightHistory(entries, "sessionVolume")
+            if (sessionVolumeEntries.isEmpty()) {
+                // ispisi "No Data" ako nema podataka
+                sessionVolumeChart.setNoDataText("No Data Available")
+                sessionVolumeChart.setNoDataTextColor(Color.WHITE)  // boja teksta
+            } else {
+                setupLineChart(sessionVolumeEntries, sessionVolumeChart)
+            }
+        }
+    }
+
+    private suspend fun getWeightHistory(
+        entries: List<FinishedWorkoutExercise>,
+        type: String
+    ): List<Entry> {
+        // map oblika <datum, max tezina>
+        val sessionMax = mutableMapOf<Long, Float>()
+
+        for (entry in entries) {
+            // razdvoji tezine i broj ponavljanja te dohvati workout ID i datum
+            val weights = entry.weights.split(",").mapNotNull { it.toFloatOrNull() }
+            val reps = entry.reps.split(",").mapNotNull { it.toIntOrNull() }
+            val workoutId = entry.workoutId
+            val date = db.finishedWorkoutDao().getWorkoutById(workoutId).date
+
+            // default vrijednost
+            var maxWeight: Float = 0f
+
+            // dohvati najvecu tezinu iz setova
+            if (type == "maxWeight") {
+                maxWeight = weights.maxOrNull() ?: 0f
+            }
+            // dohvati najbolji set iz sessiona
+            else if (type == "bestSet") {
+                for (i in weights.indices) {
+                    if (i < reps.size) {
+                        val score = weights[i] * reps[i]
+                        maxWeight = maxOf(maxWeight, score)
+                    }
+                }
+            }
+            // dohvati volume za cijeli session
+            else if (type == "sessionVolume") {
+                for (i in weights.indices) {
+                    if (i < reps.size) {
+                        maxWeight += weights[i] * reps[i]
+                    }
+                }
+            }
+            // spremi najvecu tezinu za taj datum
+            sessionMax[date] = maxOf(sessionMax.getOrDefault(date, 0f), maxWeight)
+        }
+        val chartEntries = mutableListOf<Entry>()
+
+        for ((date, weight) in sessionMax) {
+            chartEntries.add(Entry(date.toFloat(), weight))
         }
 
-        // max weight,max set volume, max session volume
-        // graf za max weight, best set volume, session volume
+
+        return chartEntries.sortedBy { it.x }
+    }
+
+    private fun setupLineChart(entries: List<Entry>, chart: LineChart) {
+        // kreiraj novi LineDataSet
+        val dataSet = LineDataSet(entries, "Weight Progress")
+
+        // formatiranje grafa
+        dataSet.color = Color.BLUE
+        dataSet.valueTextColor = Color.WHITE
+        dataSet.valueTextSize = 14f
+        dataSet.lineWidth = 2f
+        dataSet.setCircleColor(Color.WHITE) // tocke na grafu
+
+        // formatiraj x os
+        chart.xAxis.position = XAxis.XAxisPosition.BOTTOM
+        chart.xAxis.textColor = Color.WHITE
+        chart.xAxis.textSize = 12f
+
+        // formatiraj y os
+        chart.axisLeft.textColor = Color.WHITE
+        chart.axisLeft.textSize = 12f
+        chart.axisRight.isEnabled = false
+
+        // ukloni nepotrebne elemente
+        chart.description.isEnabled = false
+        chart.legend.isEnabled = false
+        chart.xAxis.setDrawGridLines(false)
+
+        // postavi podatke na graf
+        val lineData = LineData(dataSet)
+        chart.data = lineData
+
+        // formatiraj datume za prikaz na x osi
+        chart.xAxis.valueFormatter = object : ValueFormatter() {
+            private val dateFormat = SimpleDateFormat("dd MMM", Locale.getDefault())
+
+            override fun getFormattedValue(value: Float): String {
+                return dateFormat.format(Date(value.toLong()))
+            }
+        }
+
+        chart.extraLeftOffset = 14f  // padding lijevo
+        chart.extraRightOffset = 14f // padding desno
+
+        chart.invalidate() // osvjezi graf
     }
 
     private fun getMaxWeight(entries: List<FinishedWorkoutExercise>): Float {
