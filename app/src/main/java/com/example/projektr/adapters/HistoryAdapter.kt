@@ -14,9 +14,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.example.projektr.R
 import com.example.projektr.activities.FinishedWorkoutActivity
-import com.example.projektr.database.AppDatabase
-import com.example.projektr.database.FinishedWorkout
-import com.example.projektr.database.FinishedWorkoutExercise
+import com.example.projektr.database.FinishedWorkoutRepository
+import com.example.projektr.database.FirestoreFinishedWorkout.FinishedWorkout
+import com.example.projektr.database.FirestoreFinishedWorkout.FinishedWorkoutExercise
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -25,7 +25,7 @@ import java.util.Locale
 class HistoryAdapter(
     private val workoutsWithExercises: MutableList<Pair<FinishedWorkout, List<FinishedWorkoutExercise>>>,
     private val lifecycleOwner: LifecycleOwner,
-    private val db: AppDatabase
+    private val workoutRepository: FinishedWorkoutRepository = FinishedWorkoutRepository(),
 ) : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
 
     // sortiraj od najnovijeg prema najstarijem
@@ -91,7 +91,7 @@ class HistoryAdapter(
                     R.id.menu_delete -> {
                         lifecycleOwner.lifecycleScope.launch {
                             // izbrisi workout iz baze
-                            db.finishedWorkoutDao().deleteWorkoutAndExercises(workout.id)
+                            workoutRepository.deleteFinishedWorkout(workout.id)
 
                             if (position in workoutsWithExercises.indices) { // provjeri poziciju
                                 workoutsWithExercises.removeAt(position)

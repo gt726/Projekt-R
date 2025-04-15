@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.projektr.database.FinishedWorkoutExercise
+import com.example.projektr.database.FirestoreFinishedWorkout.FinishedWorkoutExercise
 import com.example.projektr.databinding.ListFwExerciseBinding
 
 class FWExerciseAdapter(

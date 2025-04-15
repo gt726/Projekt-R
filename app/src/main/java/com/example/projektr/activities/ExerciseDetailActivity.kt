@@ -5,13 +5,10 @@ import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.projektr.R
-import com.example.projektr.database.AppDatabase
-import com.example.projektr.database.FinishedWorkoutExercise
+import com.example.projektr.database.FinishedWorkoutRepository
+import com.example.projektr.database.FirestoreFinishedWorkout.FinishedWorkoutExercise
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
@@ -25,7 +22,7 @@ import java.util.Locale
 
 class ExerciseDetailActivity : AppCompatActivity() {
 
-    private lateinit var db: AppDatabase
+    private val workoutRepository = FinishedWorkoutRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,12 +46,9 @@ class ExerciseDetailActivity : AppCompatActivity() {
         // postavi naslov
         naslov.text = exerciseName
 
-        // inicijaliziraj bazu
-        db = AppDatabase.getDatabase(this)
-
         lifecycleScope.launch {
             // dohvati sve zavrsene workoutove za tu vjezbu
-            val entries = db.finishedWorkoutDao().getAllEntriesForExercise(exerciseName)
+            val entries = workoutRepository.getAllEntriesForExercise(exerciseName)
             val maxWeightValue: String
             val maxSetValue: String
             val maxSessionValue: String
@@ -124,7 +118,8 @@ class ExerciseDetailActivity : AppCompatActivity() {
             val weights = entry.weights.split(",").mapNotNull { it.toFloatOrNull() }
             val reps = entry.reps.split(",").mapNotNull { it.toIntOrNull() }
             val workoutId = entry.workoutId
-            val date = db.finishedWorkoutDao().getWorkoutById(workoutId).date
+            val date =
+                workoutRepository.getFinishedWorkouts().find { it.id == workoutId }?.date ?: 0L
 
             // default vrijednost
             var maxWeight: Float = 0f
@@ -236,7 +231,7 @@ class ExerciseDetailActivity : AppCompatActivity() {
 
     private fun getBestSession(entries: List<FinishedWorkoutExercise>): String {
         // grupiraj setove po workout ID-u
-        val sessionVolumes = mutableMapOf<Int, Float>()
+        val sessionVolumes = mutableMapOf<String, Float>()
 
         for (entry in entries) {
             // razdvoji tezine i broj ponavljanja te dohvati workout ID

@@ -7,9 +7,6 @@ class FirestoreTemplate {
         val name: String = "",
         val userId: String = "" // kako bi povezali korisnika s templateom
     )
-//    {
-//        constructor() : this("", "", "")
-//    }
 
     data class TemplateExercise(
         var id: String = "",
@@ -17,7 +14,4 @@ class FirestoreTemplate {
         val exerciseName: String = "",
         val numberOfSets: Int = 0
     )
-//    {
-//        constructor() : this("", "", "", 0)
-//    }
 }

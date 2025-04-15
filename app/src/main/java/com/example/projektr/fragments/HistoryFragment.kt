@@ -1,8 +1,7 @@
-package com.example.projektr.fragments.main
+package com.example.projektr.fragments
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,13 +10,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.projektr.activities.SettingsActivity
 import com.example.projektr.adapters.HistoryAdapter
-import com.example.projektr.database.AppDatabase
+import com.example.projektr.database.FinishedWorkoutRepository
 import com.example.projektr.databinding.FragmentHistoryBinding
 import kotlinx.coroutines.launch
 
 class HistoryFragment : Fragment() {
 
     private lateinit var binding: FragmentHistoryBinding
+
+    private val workoutRepository = FinishedWorkoutRepository()
 
 
     override fun onCreateView(
@@ -31,17 +32,15 @@ class HistoryFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         //----------------------------------------------------------------------------------------
-        // dohvati bazu podataka
-        val db = AppDatabase.getDatabase(requireContext())
-        Log.d("HistoryFragment", "Database initialized: $db")
 
         lifecycleScope.launch {
-            val workouts = db.finishedWorkoutDao().getWorkouts()
+            val workouts = workoutRepository.getFinishedWorkouts()
             val workoutsWithExercises = workouts.map { workout ->
-                val exercises = db.finishedWorkoutDao().getExercisesForWorkout(workout.id)
+                val exercises = workoutRepository.getExercisesForFinishedWorkout(workout.id)
                 workout to exercises
             }.toMutableList()
-            recyclerView.adapter = HistoryAdapter(workoutsWithExercises, viewLifecycleOwner, db)
+            recyclerView.adapter =
+                HistoryAdapter(workoutsWithExercises, viewLifecycleOwner, workoutRepository)
         }
         //----------------------------------------------------------------------------------------
 

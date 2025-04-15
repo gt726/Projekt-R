@@ -1,4 +1,4 @@
-package com.example.projektr.database
+package com.example.projektr.database.room
 
 import androidx.room.*
 

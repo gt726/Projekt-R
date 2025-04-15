@@ -1,4 +1,4 @@
-package com.example.projektr.fragments.main
+package com.example.projektr.fragments
 
 import android.content.Intent
 import android.os.Bundle

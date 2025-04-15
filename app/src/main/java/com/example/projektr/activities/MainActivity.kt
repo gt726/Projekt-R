@@ -6,9 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.projektr.R
-import com.example.projektr.fragments.main.ExercisesFragment
-import com.example.projektr.fragments.main.HistoryFragment
-import com.example.projektr.fragments.main.WorkoutFragment
+import com.example.projektr.fragments.ExercisesFragment
+import com.example.projektr.fragments.HistoryFragment
+import com.example.projektr.fragments.WorkoutFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {

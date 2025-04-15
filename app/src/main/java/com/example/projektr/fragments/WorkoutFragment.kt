@@ -1,4 +1,4 @@
-package com.example.projektr.fragments.main
+package com.example.projektr.fragments
 
 import android.content.Intent
 import android.os.Bundle
@@ -12,11 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.projektr.activities.SettingsActivity
 import com.example.projektr.activities.template.AddExerciseActivity
 import com.example.projektr.adapters.TemplateAdapter
-import com.example.projektr.database.AppDatabase
 import com.example.projektr.database.TemplateRepository
 import com.example.projektr.databinding.FragmentWorkoutBinding
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
 
