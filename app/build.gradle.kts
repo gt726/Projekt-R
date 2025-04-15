@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.room.common)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.firebase.firestore)
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.runtime)
     testImplementation(libs.junit)

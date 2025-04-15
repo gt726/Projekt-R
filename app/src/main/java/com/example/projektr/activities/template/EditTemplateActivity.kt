@@ -21,14 +21,17 @@ import com.example.projektr.adapters.EditTemplateAdapter
 import com.example.projektr.data.Exercise
 import com.example.projektr.data.ExerciseWithSets
 import com.example.projektr.database.AppDatabase
-import com.example.projektr.database.Template
-import com.example.projektr.database.TemplateExercise
+import com.example.projektr.database.FirestoreTemplate.Template
+import com.example.projektr.database.FirestoreTemplate.TemplateExercise
+import com.example.projektr.database.TemplateRepository
 import kotlinx.coroutines.launch
 
 class EditTemplateActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: EditTemplateAdapter
+
+    private val templateRepository = TemplateRepository()
 
     // popis odabranih vjezbi
     private val exerciseList = mutableListOf<ExerciseWithSets>()
@@ -47,7 +50,7 @@ class EditTemplateActivity : AppCompatActivity() {
         // dohvati podatke iz intenta
         val startMode = intent.getStringExtra("START_MODE") ?: ""
         Log.d("EditTemplateActivity", "startMode: $startMode")
-        val existingTemplateId = intent.getIntExtra("TEMPLATE_ID", -1)
+        val existingTemplateId = intent.getStringExtra("TEMPLATE_ID") ?: ""
         val loadFromDb = intent.getBooleanExtra("LOAD_FROM_DB", false)
 
         // ako se stvara novi template
@@ -56,20 +59,27 @@ class EditTemplateActivity : AppCompatActivity() {
             val passedExercises =
                 intent.getSerializableExtra("EXERCISES_LIST") as? ArrayList<ExerciseWithSets>
             if (passedExercises != null) {
-                //exerciseList.clear()
                 exerciseList.addAll(passedExercises)
             }
         } else {
             // inace dohvati popis vjezbi iz baze podataka
-            val db = AppDatabase.getDatabase(this)
             lifecycleScope.launch {
-                val template = db.templateDao().getTemplateById(existingTemplateId)
-                val exercises = db.templateDao().getExercisesForTemplate(existingTemplateId)
-                exerciseList.clear()
-                exerciseList.addAll(exercises.map {
-                    ExerciseWithSets(Exercise(it.exerciseName), it.numberOfSets)
-                })
-                adapter.notifyDataSetChanged()
+                try {
+                    val exercises = templateRepository.getExercisesForTemplate(existingTemplateId)
+                    exerciseList.clear()
+                    exerciseList.addAll(exercises.map {
+                        ExerciseWithSets(Exercise(it.exerciseName), it.numberOfSets)
+                    })
+
+                    adapter.notifyDataSetChanged()
+                } catch (e: Exception) {
+                    Toast.makeText(
+                        this@EditTemplateActivity,
+                        "Error loading template",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    Log.e("EditTemplateActivity", "Error loading template", e)
+                }
             }
         }
 
@@ -87,10 +97,12 @@ class EditTemplateActivity : AppCompatActivity() {
 
         // postavi naslov ako se ureduje postojeci template
         if (startMode == "EDIT_EXISTING") {
-            val db = AppDatabase.getDatabase(this)
             lifecycleScope.launch {
-                val template = db.templateDao().getTemplateById(existingTemplateId)
-                title.text = template.name
+                val templates = templateRepository.getTemplates()
+                val template = templates.find { it.id == existingTemplateId }
+                template?.let {
+                    title.text = it.name
+                }
             }
         }
 
@@ -144,7 +156,7 @@ class EditTemplateActivity : AppCompatActivity() {
     private fun saveTemplate(
         exerciseList: List<ExerciseWithSets>,
         startMode: String,
-        existingTemplateId: Int
+        existingTemplateId: String
     ) {
         // prikazi prompt za unos imena templatea
         val promptView = layoutInflater.inflate(R.layout.prompt_template_name, null)
@@ -161,12 +173,18 @@ class EditTemplateActivity : AppCompatActivity() {
 
         // ako se ureduje postojeci template, unesi ime u prompt
         if (startMode == "EDIT_EXISTING") {
-            val db = AppDatabase.getDatabase(this)
             lifecycleScope.launch {
-                val template = db.templateDao().getTemplateById(existingTemplateId)
-                templateName.setText(template.name)
-                // highlightaj tekst td user moze samo poceti tipkati
-                templateName.setSelection(0, template.name.length)
+                try {
+                    val templates = templateRepository.getTemplates()
+                    val template = templates.find { it.id == existingTemplateId }
+                    template?.let {
+                        templateName.setText(it.name)
+                        // highlightaj tekst tako da user moze samo poceti tipkati
+                        templateName.setSelection(0, it.name.length)
+                    }
+                } catch (e: Exception) {
+                    Log.e("EditTemplateActivity", "Error loading template name", e)
+                }
             }
         }
         templateName.requestFocus()
@@ -180,19 +198,23 @@ class EditTemplateActivity : AppCompatActivity() {
         okButton.setOnClickListener() {
             val name = templateName.text.toString()
             if (name.isNotBlank()) {
-                val db = AppDatabase.getDatabase(this)
                 lifecycleScope.launch {
                     // ako se ureduje postojeci template
                     if (startMode == "EDIT_EXISTING") {
-                        db.templateDao().renameTemplate(existingTemplateId, name)
-                        db.templateDao().deleteExercisesForTemplate(existingTemplateId)
-                        db.templateDao().insertExercises(exerciseList.map {
+                        // azuriraj ime templatea u bazi
+                        templateRepository.renameTemplate(existingTemplateId, name)
+                        // izbrisi postojece vjezbe i dodaj nove
+                        templateRepository.deleteExercisesForTemplate(existingTemplateId)
+
+                        val exercises = exerciseList.map {
                             TemplateExercise(
                                 templateId = existingTemplateId,
                                 exerciseName = it.exercise.name,
                                 numberOfSets = it.numberOfSets
                             )
-                        })
+                        }
+                        templateRepository.insertExercises(existingTemplateId, exercises)
+
                         Toast.makeText(
                             this@EditTemplateActivity,
                             "Template updated!",
@@ -201,15 +223,16 @@ class EditTemplateActivity : AppCompatActivity() {
                     }
                     // inace stvori novi template
                     else {
-                        val templateId = db.templateDao().insertTemplate(Template(name = name))
+                        val template = Template(name = name)
+                        val templateId = templateRepository.insertTemplate(template)
                         val exercises = exerciseList.map {
                             TemplateExercise(
-                                templateId = templateId.toInt(),
+                                templateId = templateId,
                                 exerciseName = it.exercise.name,
                                 numberOfSets = it.numberOfSets
                             )
                         }
-                        db.templateDao().insertExercises(exercises)
+                        templateRepository.insertExercises(templateId, exercises)
 
                         // javi korisniku da je template spremljen
                         Toast.makeText(

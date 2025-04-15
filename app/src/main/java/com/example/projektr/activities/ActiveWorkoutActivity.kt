@@ -18,6 +18,7 @@ import com.example.projektr.data.ExerciseWithSets
 import com.example.projektr.database.AppDatabase
 import com.example.projektr.database.FinishedWorkout
 import com.example.projektr.database.FinishedWorkoutExercise
+import com.example.projektr.database.TemplateRepository
 import kotlinx.coroutines.launch
 
 class ActiveWorkoutActivity : AppCompatActivity() {
@@ -27,6 +28,8 @@ class ActiveWorkoutActivity : AppCompatActivity() {
 
     // popis odabranih vjezbi
     private val exerciseList = mutableListOf<ExerciseWithSets>()
+
+    private val templateRepository = TemplateRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +48,7 @@ class ActiveWorkoutActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
 
         // dohvati templateId iz intenta
-        val templateId = intent.getIntExtra("TEMPLATE_ID", -1)
+        val templateId = intent.getStringExtra("TEMPLATE_ID") ?: ""
         Log.d("ActiveWorkoutActivity", "templateId: $templateId")
 
         // dohvati elemente
@@ -56,13 +59,19 @@ class ActiveWorkoutActivity : AppCompatActivity() {
         // dohvati vjezbe za taj template iz baze
         val db = AppDatabase.getDatabase(this)
         lifecycleScope.launch {
-            val template = db.templateDao().getTemplateById(templateId)
-            title.text = template.name
-            val exercises = db.templateDao().getExercisesForTemplate(templateId)
-            exerciseList.clear()
-            exerciseList.addAll(exercises.map {
-                ExerciseWithSets(Exercise(it.exerciseName), it.numberOfSets)
-            })
+            val templates = templateRepository.getTemplates()
+
+            val template = templates.find { it.id == templateId }
+
+            template?.let {
+                title.text = template.name
+                val exercises = templateRepository.getExercisesForTemplate(templateId)
+                exerciseList.clear()
+                exerciseList.addAll(exercises.map {
+                    ExerciseWithSets(Exercise(it.exerciseName), it.numberOfSets)
+                })
+            }
+
             adapter.notifyDataSetChanged()
         }
 
