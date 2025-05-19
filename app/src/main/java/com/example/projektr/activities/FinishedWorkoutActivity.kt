@@ -51,7 +51,7 @@ class FinishedWorkoutActivity : AppCompatActivity() {
             val workout = workoutRepository.getFinishedWorkouts().find { it.id == workoutId }
             workout?.let {
                 title.text = it.workoutName
-                date.text = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(it.date)
+                date.text = formatDate(it.date)
                 val exercises = workoutRepository.getExercisesForFinishedWorkout(it.id)
                 exerciseList.clear()
                 exerciseList.addAll(exercises)
@@ -60,4 +60,8 @@ class FinishedWorkoutActivity : AppCompatActivity() {
 
         }
     }
+}
+
+fun formatDate(timestamp: Long): String {
+    return SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(timestamp)
 }

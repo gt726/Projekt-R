@@ -42,7 +42,7 @@ class ExercisesFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context) // postavi layout manager
         recyclerView.adapter = adapter // postavi adapter za recyclerView
 
-        // doddaj divider
+        // dodaj divider
         val divider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.divider)
         drawable?.let { divider.setDrawable(it) }

@@ -46,7 +46,7 @@ class WorkoutFragment : Fragment() {
                 }.toMutableList()
                 Log.d("WorkoutFragment", "Templates with exercises: $templatesWithExercises")
 
-                // initializiraj adapter
+                // inicializiraj adapter
                 recyclerView.adapter = TemplateAdapter(
                     templatesWithExercises,
                     viewLifecycleOwner,

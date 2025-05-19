@@ -121,12 +121,13 @@ class EditTemplateActivity : AppCompatActivity() {
             val intent = Intent(this, AddExerciseActivity::class.java)
             intent.putExtra(
                 "EXERCISES_LIST",
-                ArrayList(exerciseList.map {
-                    ExerciseWithSets(
-                        it.exercise,
-                        it.numberOfSets
-                    )
-                })
+//                ArrayList(exerciseList.map {
+//                    ExerciseWithSets(
+//                        it.exercise,
+//                        it.numberOfSets
+//                    )
+//                })
+                mapToList(exerciseList)
             )
             intent.putExtra("START_MODE", startMode)
             //intent.putExtra("LOAD_FROM_DB", false)
@@ -255,4 +256,11 @@ class EditTemplateActivity : AppCompatActivity() {
         prompt.show()
     }
 
+}
+
+// konverzija u ArrayList za intent
+fun mapToList(input: List<ExerciseWithSets>): ArrayList<ExerciseWithSets> {
+    return ArrayList(input.map {
+        ExerciseWithSets(it.exercise, it.numberOfSets)
+    })
 }

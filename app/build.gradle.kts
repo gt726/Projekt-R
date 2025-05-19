@@ -56,6 +56,14 @@ dependencies {
     implementation(libs.androidx.room.common)
     implementation(libs.androidx.room.ktx)
     implementation(libs.firebase.firestore)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.jupiter)
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.runtime)
     testImplementation(libs.junit)
@@ -63,7 +71,11 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
-    val fragment_version = "1.8.4"
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation("org.mockito:mockito-core:5.5.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
+
+    //val fragment_version = "1.8.4"
 
     // Java language implementation
     implementation(libs.androidx.fragment)

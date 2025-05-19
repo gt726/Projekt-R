@@ -48,7 +48,8 @@ class TemplateAdapter(
         holder.exerciseList.removeAllViews()
         exercises.forEach { exercise ->
             val textView = TextView(holder.itemView.context).apply {
-                text = "${exercise.exerciseName} - ${exercise.numberOfSets} sets"
+//                text = "${exercise.exerciseName} - ${exercise.numberOfSets} sets"
+                text = formatExerciseText(exercise)
                 setPadding(8, 4, 8, 4)
                 setTextColor(Color.parseColor("#B1B1B1"))
             }
@@ -191,4 +192,8 @@ class TemplateAdapter(
     }
 
     override fun getItemCount() = templatesWithExercises.size
+}
+
+fun formatExerciseText(exercise: TemplateExercise): String {
+    return "${exercise.exerciseName} - ${exercise.numberOfSets} sets"
 }

@@ -57,7 +57,7 @@ class AddExerciseActivity : AppCompatActivity() {
         val existingTemplateId = intent.getStringExtra("TEMPLATE_ID") ?: ""
 
         // sortiraj vjezbe abecedno
-        exerciseList = ExerciseList.list.sortedBy { it.name }
+        exerciseList = sortExercises(ExerciseList.list)
 
         // pronadi recyclerView
         recyclerView = binding.exercisesRecyclerView
@@ -136,12 +136,13 @@ class AddExerciseActivity : AppCompatActivity() {
                 val intent = Intent(this, EditTemplateActivity::class.java)
                 intent.putExtra(
                     "EXERCISES_LIST",
-                    ArrayList(selectedExercises.map {
-                        ExerciseWithSets(
-                            it.exercise,
-                            it.numberOfSets
-                        )
-                    })
+//                    ArrayList(selectedExercises.map {
+//                        ExerciseWithSets(
+//                            it.exercise,
+//                            it.numberOfSets
+//                        )
+//                    })
+                    mapToSerializableList(selectedExercises)
                 )
                 // posalji potrebne detalje
                 intent.putExtra("START_MODE", startMode)
@@ -158,5 +159,17 @@ class AddExerciseActivity : AppCompatActivity() {
 
         prompt.show()
     }
+}
+
+// sortiraj vježbe abecedno
+fun sortExercises(exercises: List<Exercise>): List<Exercise> {
+    return exercises.sortedBy { it.name }
+}
+
+// konverzija u ArrayList za intent
+fun mapToSerializableList(input: List<ExerciseWithSets>): ArrayList<ExerciseWithSets> {
+    return ArrayList(input.map {
+        ExerciseWithSets(it.exercise, it.numberOfSets)
+    })
 }
 

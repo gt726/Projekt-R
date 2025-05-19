@@ -6,13 +6,13 @@ import kotlinx.coroutines.tasks.await
 import com.example.projektr.database.FirestoreTemplate.Template
 import com.example.projektr.database.FirestoreTemplate.TemplateExercise
 
-class TemplateRepository {
-    private val db = FirebaseFirestore.getInstance()
-    private val auth = FirebaseAuth.getInstance()
+open class TemplateRepository {
+    protected open val db = FirebaseFirestore.getInstance()
+    protected open val auth = FirebaseAuth.getInstance()
 
 
     // dohvati ID trenutnog korisnika
-    private fun getCurrentUserId(): String {
+    protected open fun getCurrentUserId(): String {
         return auth.currentUser?.uid ?: throw Exception("User not authenticated")
     }
 
@@ -112,7 +112,7 @@ class TemplateRepository {
             .update("name", newName)
             .await()
     }
-    
+
 
     // izbrisi template
     suspend fun deleteTemplate(templateId: String) {

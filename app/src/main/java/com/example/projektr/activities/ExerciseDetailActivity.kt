@@ -74,6 +74,7 @@ class ExerciseDetailActivity : AppCompatActivity() {
             // max weight
             val maxWeightChart: LineChart = findViewById(R.id.max_weight_chart)
             val maxWeightEntries = getWeightHistory(entries, "maxWeight")
+
             if (maxWeightEntries.isEmpty()) {
                 // ispisi "No Data" ako nema podataka
                 maxWeightChart.setNoDataText("No Data Available")
@@ -85,6 +86,7 @@ class ExerciseDetailActivity : AppCompatActivity() {
             // best set
             val bestSetChart: LineChart = findViewById(R.id.best_set_chart)
             val bestSetEntries = getWeightHistory(entries, "bestSet")
+
             if (bestSetEntries.isEmpty()) {
                 // ispisi "No Data" ako nema podataka
                 bestSetChart.setNoDataText("No Data Available")
@@ -96,6 +98,7 @@ class ExerciseDetailActivity : AppCompatActivity() {
             // session volume
             val sessionVolumeChart: LineChart = findViewById(R.id.session_volume_chart)
             val sessionVolumeEntries = getWeightHistory(entries, "sessionVolume")
+
             if (sessionVolumeEntries.isEmpty()) {
                 // ispisi "No Data" ako nema podataka
                 sessionVolumeChart.setNoDataText("No Data Available")
@@ -202,63 +205,62 @@ class ExerciseDetailActivity : AppCompatActivity() {
 
         chart.invalidate() // osvjezi graf
     }
+}
 
-    private fun getMaxWeight(entries: List<FinishedWorkoutExercise>): Float {
-        return entries.maxOfOrNull {
-            it.weights.split(",").filter { w -> w.isNotEmpty() }.maxOfOrNull { w -> w.toFloat() }
-                ?: 0f
-        } ?: 0f
-    }
+fun getMaxWeight(entries: List<FinishedWorkoutExercise>): Float {
+    return entries.maxOfOrNull {
+        it.weights.split(",").filter { w -> w.isNotEmpty() }.maxOfOrNull { w -> w.toFloat() }
+            ?: 0f
+    } ?: 0f
+}
 
-    private fun getBestSet(entries: List<FinishedWorkoutExercise>): String {
-        var bestSet = ""
-        var bestWeight = 0f
-        for (entry in entries) {
-            val weights = entry.weights.split(",").mapNotNull { it.toFloatOrNull() }
-            val reps = entry.reps.split(",").mapNotNull { it.toIntOrNull() }
-            for (i in weights.indices) {
-                if (i < reps.size) {
-                    val score = weights[i] * reps[i]
-                    if (score > bestWeight) {
-                        bestWeight = score
-                        bestSet = "${weights[i]} kg x ${reps[i]} reps"
-                    }
+fun getBestSet(entries: List<FinishedWorkoutExercise>): String {
+    var bestSet = ""
+    var bestWeight = 0f
+    for (entry in entries) {
+        val weights = entry.weights.split(",").mapNotNull { it.toFloatOrNull() }
+        val reps = entry.reps.split(",").mapNotNull { it.toIntOrNull() }
+        for (i in weights.indices) {
+            if (i < reps.size) {
+                val score = weights[i] * reps[i]
+                if (score > bestWeight) {
+                    bestWeight = score
+                    bestSet = "${weights[i]} kg x ${reps[i]} reps"
                 }
             }
         }
-        return bestSet
     }
+    return bestSet
+}
 
-    private fun getBestSession(entries: List<FinishedWorkoutExercise>): String {
-        // grupiraj setove po workout ID-u
-        val sessionVolumes = mutableMapOf<String, Float>()
+fun getBestSession(entries: List<FinishedWorkoutExercise>): String {
+    // grupiraj setove po workout ID-u
+    val sessionVolumes = mutableMapOf<String, Float>()
 
-        for (entry in entries) {
-            // razdvoji tezine i broj ponavljanja te dohvati workout ID
-            val weights = entry.weights.split(",").mapNotNull { it.toFloatOrNull() }
-            val reps = entry.reps.split(",").mapNotNull { it.toIntOrNull() }
-            val workoutId = entry.workoutId
+    for (entry in entries) {
+        // razdvoji tezine i broj ponavljanja te dohvati workout ID
+        val weights = entry.weights.split(",").mapNotNull { it.toFloatOrNull() }
+        val reps = entry.reps.split(",").mapNotNull { it.toIntOrNull() }
+        val workoutId = entry.workoutId
 
-            var sessionVolume = 0f
-            for (i in weights.indices) {
-                if (i < reps.size) {
-                    sessionVolume += weights[i] * reps[i]
-                }
+        var sessionVolume = 0f
+        for (i in weights.indices) {
+            if (i < reps.size) {
+                sessionVolume += weights[i] * reps[i]
             }
-
-            // dodaj ukupnom zbroju za taj workout ID
-            sessionVolumes[workoutId] = sessionVolumes.getOrDefault(workoutId, 0f) + sessionVolume
         }
 
-        // dohvati workout ID s najvecim volumenom
-        val bestWorkoutId = sessionVolumes.maxByOrNull { it.value }?.key
-        val bestVolume = sessionVolumes[bestWorkoutId] ?: 0f
-
-        return if (bestWorkoutId != null) {
-            "$bestVolume kg"
-        } else {
-            "---"
-        }
+        // dodaj ukupnom zbroju za taj workout ID
+        sessionVolumes[workoutId] = sessionVolumes.getOrDefault(workoutId, 0f) + sessionVolume
     }
 
+    // dohvati workout ID s najvecim volumenom
+    val bestWorkoutId = sessionVolumes.maxByOrNull { it.value }?.key
+    val bestVolume = sessionVolumes[bestWorkoutId] ?: 0f
+
+    return if (bestWorkoutId != null) {
+        "$bestVolume kg"
+    } else {
+        "---"
+    }
 }

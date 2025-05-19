@@ -92,38 +92,38 @@ class ActiveWorkoutActivity : AppCompatActivity() {
 
                 // dohvati sve setove iz adaptera
                 val allSetsData = adapter.getAllSetsData()
-                var workoutEmpty = true
-                val workoutExercises = mutableListOf<FinishedWorkoutExercise>()
+                val workoutExercises = formatExercises(allSetsData, workoutId)
+                val workoutEmpty = workoutExercises.isEmpty()
 
                 // za svaku vjezbu, stvori FinishedWorkoutExercise
-                for ((exerciseName, sets) in allSetsData) {
-                    val validSets = sets.filter { it.first.isNotEmpty() && it.second.isNotEmpty() }
-
-                    if (validSets.isNotEmpty()) {
-                        workoutEmpty = false
-                        var allWeights = ""
-                        var allReps = ""
-
-                        validSets.forEach { (weight, reps) ->
-                            allWeights += "$weight,"
-                            allReps += "$reps,"
-                        }
-
-                        val finishedExercise = FinishedWorkoutExercise(
-                            workoutId = workoutId,
-                            exerciseName = exerciseName,
-                            weights = allWeights,
-                            reps = allReps,
-                            numberOfSets = validSets.size
-                        )
-                        workoutExercises.add(finishedExercise)
-                    }
-
-                    Log.d(
-                        "ActiveWorkoutActivity",
-                        "Exercise: $exerciseName,Number of sets: ${validSets.size} ,Sets: $validSets"
-                    )
-                }
+//                for ((exerciseName, sets) in allSetsData) {
+//                    val validSets = sets.filter { it.first.isNotEmpty() && it.second.isNotEmpty() }
+//
+//                    if (validSets.isNotEmpty()) {
+//                        workoutEmpty = false
+//                        var allWeights = ""
+//                        var allReps = ""
+//
+//                        validSets.forEach { (weight, reps) ->
+//                            allWeights += "$weight,"
+//                            allReps += "$reps,"
+//                        }
+//
+//                        val finishedExercise = FinishedWorkoutExercise(
+//                            workoutId = workoutId,
+//                            exerciseName = exerciseName,
+//                            weights = allWeights,
+//                            reps = allReps,
+//                            numberOfSets = validSets.size
+//                        )
+//                        workoutExercises.add(finishedExercise)
+//                    }
+//
+//                    Log.d(
+//                        "ActiveWorkoutActivity",
+//                        "Exercise: $exerciseName,Number of sets: ${validSets.size} ,Sets: $validSets"
+//                    )
+//                }
 
                 if (!workoutEmpty) {
                     // spremi vjezbe u bazu
@@ -143,4 +143,42 @@ class ActiveWorkoutActivity : AppCompatActivity() {
             }
         }
     }
+}
+
+fun formatExercises(
+    allSetsData: Map<String, List<Pair<String, String>>>,
+    workoutId: String
+): List<FinishedWorkoutExercise> {
+    val workoutExercises = mutableListOf<FinishedWorkoutExercise>()
+
+    // za svaku vjezbu, stvori FinishedWorkoutExercise
+    for ((exerciseName, sets) in allSetsData) {
+        val validSets = sets.filter { it.first.isNotEmpty() && it.second.isNotEmpty() }
+
+        if (validSets.isNotEmpty()) {
+            var allWeights = ""
+            var allReps = ""
+
+            validSets.forEach { (weight, reps) ->
+                allWeights += "$weight,"
+                allReps += "$reps,"
+            }
+
+            val finishedExercise = FinishedWorkoutExercise(
+                workoutId = workoutId,
+                exerciseName = exerciseName,
+                weights = allWeights,
+                reps = allReps,
+                numberOfSets = validSets.size
+            )
+            workoutExercises.add(finishedExercise)
+        }
+
+//        Log.d(
+//            "ActiveWorkoutActivity",
+//            "Exercise: $exerciseName,Number of sets: ${validSets.size} ,Sets: $validSets"
+//        )
+    }
+
+    return workoutExercises
 }

@@ -37,12 +37,20 @@ class FWExerciseAdapter(
             binding.setRecyclerView.layoutManager = LinearLayoutManager(binding.root.context)
 
             // dohvati listu tezina i ponavljanja te ukloni prazne stringove
-            val weightsList = exercise.weights.split(",").filter { it.isNotEmpty() }
-            val repsList = exercise.reps.split(",").filter { it.isNotEmpty() }
+//            val weightsList = exercise.weights.split(",").filter { it.isNotEmpty() }
+//            val repsList = exercise.reps.split(",").filter { it.isNotEmpty() }
+            val (weightsList, repsList) = parseWeightAndReps(exercise.weights, exercise.reps)
 
             // postavi adapter za setove
             val setsAdapter = FWSetsAdapter(weightsList, repsList)
             binding.setRecyclerView.adapter = setsAdapter
         }
     }
+}
+
+fun parseWeightAndReps(weights: String, reps: String): Pair<List<String>, List<String>> {
+    val weightsList = weights.split(",").filter { it.isNotBlank() }
+    val repsList = reps.split(",").filter { it.isNotBlank() }
+
+    return Pair(weightsList, repsList)
 }
