@@ -20,7 +20,9 @@ import kotlinx.coroutines.launch
 class WorkoutFragment : Fragment() {
 
     private lateinit var binding: FragmentWorkoutBinding
-    private val templateRepository = TemplateRepository()
+
+    //    private val templateRepository = TemplateRepository()
+    private val templateRepository = TemplateRepository() ?: TemplateRepository()
 
 
     override fun onCreateView(
@@ -32,6 +34,9 @@ class WorkoutFragment : Fragment() {
         binding = FragmentWorkoutBinding.inflate(inflater, container, false)
         val recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+//        val templateRepository = TemplateRepository.instance ?: TemplateRepository()
+
 
         val createTemplateBtn = binding.createTemplateButton
 

@@ -6,9 +6,16 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
-class FinishedWorkoutRepository {
-    private val db = FirebaseFirestore.getInstance()
-    private val auth = FirebaseAuth.getInstance()
+open class FinishedWorkoutRepository(
+    protected open val auth: FirebaseAuth = FirebaseAuth.getInstance()
+) {
+
+    companion object {
+        var instance: FinishedWorkoutRepository? = null
+    }
+
+    protected open val db = FirebaseFirestore.getInstance()
+//    private val auth = FirebaseAuth.getInstance()
 
 
     // dohvati ID trenutnog korisnika
@@ -156,6 +163,4 @@ class FinishedWorkoutRepository {
 
         return result
     }
-
-
 }

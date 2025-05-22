@@ -22,7 +22,10 @@ import java.util.Locale
 
 class ExerciseDetailActivity : AppCompatActivity() {
 
-    private val workoutRepository = FinishedWorkoutRepository()
+    //    private val workoutRepository = FinishedWorkoutRepository()
+    private val workoutRepository = FinishedWorkoutRepository.instance
+        ?: FinishedWorkoutRepository()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

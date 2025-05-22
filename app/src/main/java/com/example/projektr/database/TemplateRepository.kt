@@ -6,9 +6,16 @@ import kotlinx.coroutines.tasks.await
 import com.example.projektr.database.FirestoreTemplate.Template
 import com.example.projektr.database.FirestoreTemplate.TemplateExercise
 
-open class TemplateRepository {
+open class TemplateRepository(
+    protected open val auth: FirebaseAuth = FirebaseAuth.getInstance()
+) {
+
+    companion object {
+        var instance: TemplateRepository? = null
+    }
+
     protected open val db = FirebaseFirestore.getInstance()
-    protected open val auth = FirebaseAuth.getInstance()
+//    protected open val auth = FirebaseAuth.getInstance()
 
 
     // dohvati ID trenutnog korisnika

@@ -18,7 +18,8 @@ class HistoryFragment : Fragment() {
 
     private lateinit var binding: FragmentHistoryBinding
 
-    private val workoutRepository = FinishedWorkoutRepository()
+    private val workoutRepository =
+        FinishedWorkoutRepository.instance ?: FinishedWorkoutRepository()
 
 
     override fun onCreateView(
