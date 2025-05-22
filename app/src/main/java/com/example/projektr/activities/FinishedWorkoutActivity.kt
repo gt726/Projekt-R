@@ -20,7 +20,10 @@ class FinishedWorkoutActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: FWExerciseAdapter
     private val exerciseList = mutableListOf<FinishedWorkoutExercise>()
-    private val workoutRepository = FinishedWorkoutRepository()
+
+    //    private val workoutRepository = FinishedWorkoutRepository()
+    private val workoutRepository =
+        FinishedWorkoutRepository.instance ?: FinishedWorkoutRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

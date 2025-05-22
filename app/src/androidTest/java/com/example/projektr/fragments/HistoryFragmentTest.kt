@@ -11,12 +11,13 @@ import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.example.projektr.R
-import com.example.projektr.activities.ExerciseDetailActivity
+import com.example.projektr.activities.FinishedWorkoutActivity
 import com.example.projektr.activities.MainActivity
 import com.example.projektr.activities.SettingsActivity
+import com.example.projektr.adapters.HistoryAdapter
 import com.example.projektr.database.FinishedWorkoutRepository
+import com.example.projektr.database.FirestoreFinishedWorkout
 import com.example.projektr.database.TemplateRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -26,7 +27,7 @@ import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 
-class ExercisesFragmentTest {
+class HistoryFragmentTest {
     @Before
     fun setUp() {
         // pokrece espresso intents za pracenje navigacije
@@ -44,8 +45,10 @@ class ExercisesFragmentTest {
         FinishedWorkoutRepository.instance = FinishedWorkoutRepository(mockAuth)
     }
 
+
     @After
     fun tearDown() {
+        // oslobodi espresso intents
         Intents.release()
     }
 
@@ -54,9 +57,9 @@ class ExercisesFragmentTest {
         // pokreni MainActivity
         ActivityScenario.launch(MainActivity::class.java)
 
-        // otvori fragment Exercises
-        onView(withId(R.id.nav_exercises)).perform(click())
-        onView(withId(R.id.fragment_exercises_root)).check(matches(isDisplayed()))
+        // otvori fragment History
+        onView(withId(R.id.nav_history)).perform(click())
+        onView(withId(R.id.fragment_history_root)).check(matches(isDisplayed()))
 
         // klikni na ikonu postavki
         onView(withId(R.id.settings_icon)).perform(click())
@@ -64,17 +67,43 @@ class ExercisesFragmentTest {
         intended(hasComponent(SettingsActivity::class.java.name))
     }
 
+
     @Test
-    fun showExerciseDetails() {
+    fun showHistoryDetails() {
         // pokreni MainActivity
-        ActivityScenario.launch(MainActivity::class.java)
+        val scenario = ActivityScenario.launch(MainActivity::class.java)
 
-        // otvori fragment Exercises
-        onView(withId(R.id.nav_exercises)).perform(click())
-        onView(withId(R.id.fragment_exercises_root)).check(matches(isDisplayed()))
+        // pokreni History fragment
+        onView(withId(R.id.nav_history)).perform(click())
 
-        // klikni na vjezbu s popisa i provjeri da je otvorena ExerciseDetailActivity
-//        onView(withId(R.id.recycler_view)).perform(click())
+        scenario.onActivity { activity ->
+            val fragment =
+                activity.supportFragmentManager.findFragmentById(R.id.fragment_container) as? HistoryFragment
+            // umetni mock data u adapter
+            if (fragment != null) {
+                fragment.view?.findViewById<RecyclerView>(R.id.recycler_view)?.adapter =
+                    HistoryAdapter(
+                        mutableListOf(
+                            FirestoreFinishedWorkout.FinishedWorkout(
+                                "test123",
+                                "Test workout",
+                                System.currentTimeMillis(),
+                                "testUserId",
+                            )
+                                    to listOf(
+                                FirestoreFinishedWorkout.FinishedWorkoutExercise(
+                                    "testExercise123",
+                                    "test123",
+                                    "Bench press",
+                                )
+                            )
+                        ),
+                        fragment.viewLifecycleOwner
+                    )
+            }
+        }
+
+        // klikni na prvi item
         onView(withId(R.id.recycler_view))
             .perform(
                 RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
@@ -82,23 +111,8 @@ class ExercisesFragmentTest {
                     click()
                 )
             )
-        intended(hasComponent(ExerciseDetailActivity::class.java.name))
 
-        // provjeri da pise ab rollout na zaslonu
-        onView(withId(R.id.exercise_name)).check(matches(withText("Ab Rollout")))
-    }
-
-    @Test
-    fun scrollTest() {
-        // pokreni MainActivity
-        ActivityScenario.launch(MainActivity::class.java)
-
-        // otvori fragment Exercises
-        onView(withId(R.id.nav_exercises)).perform(click())
-        onView(withId(R.id.fragment_exercises_root)).check(matches(isDisplayed()))
-
-        // scrollaj do 20. vjezbe
-        onView(withId(R.id.recycler_view))
-            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(19))
+        // provjeri intent
+        intended(hasComponent(FinishedWorkoutActivity::class.java.name))
     }
 }

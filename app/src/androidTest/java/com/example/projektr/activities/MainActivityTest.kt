@@ -34,9 +34,9 @@ class MainActivityTest {
         TemplateRepository.instance = TemplateRepository(mockAuth)
     }
 
+    // provjeri da je zadani fragment WorkoutFragment
     @Test
     fun defaultFragmentIsWorkout() {
-        // provjeri da je zadani fragment WorkoutFragment
         ActivityScenario.launch(MainActivity::class.java)
             .use { scenario ->
                 scenario.onActivity { activity ->

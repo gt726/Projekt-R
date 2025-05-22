@@ -71,6 +71,12 @@ dependencies {
     implementation(libs.androidx.espresso.intents)
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.espresso.contrib) {
+        exclude(
+            group = "com.google.protobuf",
+            module = "protobuf-lite"
+        )
+    }
 
     kapt(libs.androidx.room.compiler)
 
@@ -89,6 +95,7 @@ dependencies {
     androidTestImplementation("androidx.test:rules:1.5.0")
     androidTestImplementation("com.google.firebase:firebase-auth")
     androidTestImplementation("org.mockito:mockito-android:5.5.0")
+    androidTestImplementation("androidx.fragment:fragment-testing:1.6.2")
 
 
     // Java language implementation

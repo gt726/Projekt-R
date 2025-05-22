@@ -25,7 +25,7 @@ open class FinishedWorkoutRepository(
 
 
     // dohvati sve zavrsene treninge za trenutnog korisnika
-    suspend fun getFinishedWorkouts(): List<FinishedWorkout> {
+    open suspend fun getFinishedWorkouts(): List<FinishedWorkout> {
         val userId = getCurrentUserId()
 
         return db.collection("users")

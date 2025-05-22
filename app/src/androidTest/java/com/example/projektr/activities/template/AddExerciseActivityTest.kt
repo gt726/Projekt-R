@@ -1,9 +1,11 @@
-package com.example.projektr.fragments
+package com.example.projektr.activities.template
 
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
+import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.intent.Intents
@@ -13,9 +15,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.example.projektr.R
-import com.example.projektr.activities.ExerciseDetailActivity
 import com.example.projektr.activities.MainActivity
-import com.example.projektr.activities.SettingsActivity
 import com.example.projektr.database.FinishedWorkoutRepository
 import com.example.projektr.database.TemplateRepository
 import com.google.firebase.auth.FirebaseAuth
@@ -26,7 +26,7 @@ import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 
-class ExercisesFragmentTest {
+class AddExerciseActivityTest {
     @Before
     fun setUp() {
         // pokrece espresso intents za pracenje navigacije
@@ -44,61 +44,60 @@ class ExercisesFragmentTest {
         FinishedWorkoutRepository.instance = FinishedWorkoutRepository(mockAuth)
     }
 
+
     @After
     fun tearDown() {
+        // oslobodi espresso intents
         Intents.release()
     }
 
     @Test
-    fun startSettingsActivity() {
-        // pokreni MainActivity
-        ActivityScenario.launch(MainActivity::class.java)
+    fun cancelButtonTest() {
+        // pokreni AddExerciseActivity
+        ActivityScenario.launch(AddExerciseActivity::class.java)
 
-        // otvori fragment Exercises
-        onView(withId(R.id.nav_exercises)).perform(click())
-        onView(withId(R.id.fragment_exercises_root)).check(matches(isDisplayed()))
+        // provjeri da je cancel button vidljiv
+        onView(withId(R.id.cancel_button)).check(matches(isDisplayed()))
 
-        // klikni na ikonu postavki
-        onView(withId(R.id.settings_icon)).perform(click())
-        // provjeri da je otvorena SettingsActivity
-        intended(hasComponent(SettingsActivity::class.java.name))
+        // klikni na cancel button
+        onView(withId(R.id.cancel_button)).perform(click())
+
+        // provjeri da je MainActivity pokrenut
+        intended(hasComponent(MainActivity::class.java.name))
     }
 
     @Test
-    fun showExerciseDetails() {
-        // pokreni MainActivity
-        ActivityScenario.launch(MainActivity::class.java)
+    fun addExerciseToList() {
+        // pokreni AddExerciseActivity
+        ActivityScenario.launch(AddExerciseActivity::class.java)
 
-        // otvori fragment Exercises
-        onView(withId(R.id.nav_exercises)).perform(click())
-        onView(withId(R.id.fragment_exercises_root)).check(matches(isDisplayed()))
-
-        // klikni na vjezbu s popisa i provjeri da je otvorena ExerciseDetailActivity
-//        onView(withId(R.id.recycler_view)).perform(click())
-        onView(withId(R.id.recycler_view))
+        // klikni na vjezbu s popisa
+        onView(withId(R.id.exercises_recycler_view))
             .perform(
                 RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
                     0,
                     click()
                 )
             )
-        intended(hasComponent(ExerciseDetailActivity::class.java.name))
+        // unesi broj setova u popup
+        onView(withId(R.id.sets)).perform(typeText("4"), closeSoftKeyboard())
+        // klikni na ok button
+        onView(withId(R.id.ok_button)).perform(click())
 
-        // provjeri da pise ab rollout na zaslonu
+        // provjeri da je EditTemplateActivity pokrenut
+        intended(hasComponent(EditTemplateActivity::class.java.name))
+
+        // provjeri da na zaslonu pise bench press
         onView(withId(R.id.exercise_name)).check(matches(withText("Ab Rollout")))
     }
 
     @Test
     fun scrollTest() {
         // pokreni MainActivity
-        ActivityScenario.launch(MainActivity::class.java)
-
-        // otvori fragment Exercises
-        onView(withId(R.id.nav_exercises)).perform(click())
-        onView(withId(R.id.fragment_exercises_root)).check(matches(isDisplayed()))
+        ActivityScenario.launch(AddExerciseActivity::class.java)
 
         // scrollaj do 20. vjezbe
-        onView(withId(R.id.recycler_view))
+        onView(withId(R.id.exercises_recycler_view))
             .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(19))
     }
 }
