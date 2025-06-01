@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
     kotlin("kapt")
+    id("jacoco")
 }
 
 android {
@@ -86,6 +87,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     testImplementation("org.mockito:mockito-core:5.5.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
+    testImplementation("org.robolectric:robolectric:4.10.3")
 
     // funkcijski testovi
     androidTestImplementation(libs.androidx.junit)
@@ -103,3 +105,47 @@ dependencies {
     // Kotlin
     implementation(libs.androidx.fragment.ktx)
 }
+
+tasks.register<JacocoReport>("jacocoTestReport") {
+    dependsOn("testDebugUnitTest")
+
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+    }
+
+    val packages = listOf(
+        "**/R.class",
+        "**/R$*.class",
+        "**/BuildConfig.*",
+        "**/Manifest*.*",
+        "**/*Test*.*",
+        "**/activities/login/**",
+        "**/activities/MainActivity.class",
+        "**/activities/SettingsActivity.class",
+        "**/activities/FinishedWorkoutActivity.class",
+        "**/adapters/**",
+        "**/data/**",
+        "**/database/**",
+        "**/database/FirestoreFinishedWorkout.class",
+        "**/database/FirestoreFinishedWorkout.FinishedWorkout.class",
+        "**/database/FirestoreTemplate.class",
+        "**/database/FirestoreTemplate.Template.class",
+        "**/fragments/**",
+    )
+
+    classDirectories.setFrom(
+        files(
+            fileTree("${buildDir}/tmp/kotlin-classes/debug") {
+                exclude(packages)
+            },
+            fileTree("${buildDir}/intermediates/javac/debug/classes") {
+                exclude(packages)
+            }
+        )
+    )
+
+    sourceDirectories.setFrom(files("src/main/java", "src/main/kotlin"))
+    executionData.setFrom(fileTree(buildDir).include("jacoco/testDebugUnitTest.exec"))
+}
+

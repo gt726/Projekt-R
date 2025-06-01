@@ -5,16 +5,10 @@
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="showExerciseDetails() (1)">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="testExerciseNameIsDisplayed()">
+      <SelectionState runConfigName="Tests in 'com.example.projektr'">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="ExerciseDetailActivityTest">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="Tests in 'com.example.projektr'">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
