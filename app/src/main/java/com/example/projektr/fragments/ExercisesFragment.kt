@@ -1,12 +1,12 @@
-package com.example.projektr.fragments.main
+package com.example.projektr.fragments
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,7 +16,6 @@ import com.example.projektr.adapters.ExercisesAdapter
 import com.example.projektr.data.Exercise
 import com.example.projektr.data.ExerciseList
 import com.example.projektr.databinding.FragmentExercisesBinding
-import com.example.projektr.databinding.ListItemExerciseBinding
 
 class ExercisesFragment : Fragment() {
 
@@ -36,7 +35,10 @@ class ExercisesFragment : Fragment() {
 
         recyclerView = binding.recyclerView // povezi xml
         adapter =
-            ExercisesAdapter(exercisesList) //stvori novu instancu adaptera i predaj mu popis vjezbi kao argument
+            ExercisesAdapter(
+                requireContext(),
+                exercisesList
+            ) //stvori novu instancu adaptera i predaj mu popis vjezbi kao argument
         recyclerView.layoutManager = LinearLayoutManager(context) // postavi layout manager
         recyclerView.adapter = adapter // postavi adapter za recyclerView
 

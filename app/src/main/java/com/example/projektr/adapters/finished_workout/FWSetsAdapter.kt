@@ -3,7 +3,6 @@ package com.example.projektr.adapters.finished_workout
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.projektr.databinding.ListAwSetBinding
 import com.example.projektr.databinding.ListFwSetBinding
 
 class FWSetsAdapter(

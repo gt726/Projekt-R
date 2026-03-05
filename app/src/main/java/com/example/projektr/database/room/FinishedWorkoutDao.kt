@@ -1,4 +1,4 @@
-package com.example.projektr.database
+package com.example.projektr.database.room
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -57,4 +57,8 @@ interface FinishedWorkoutDao {
         deleteAllExercises()
         deleteAllWorkouts()
     }
+
+    // dohvati sve setove za odredenu vjezbu
+    @Query("SELECT * FROM FinishedWorkoutExercise WHERE exerciseName = :exerciseName")
+    suspend fun getAllEntriesForExercise(exerciseName: String): List<FinishedWorkoutExercise>
 }

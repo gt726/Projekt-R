@@ -1,20 +1,18 @@
-package com.example.projektr.fragments.main
+package com.example.projektr.fragments
 
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.projektr.activities.template.AddExerciseActivity
 import com.example.projektr.activities.SettingsActivity
+import com.example.projektr.activities.template.AddExerciseActivity
 import com.example.projektr.adapters.TemplateAdapter
-import com.example.projektr.database.AppDatabase
-import com.example.projektr.database.Template
-import com.example.projektr.database.TemplateExercise
+import com.example.projektr.database.TemplateRepository
 import com.example.projektr.databinding.FragmentWorkoutBinding
 import kotlinx.coroutines.launch
 
@@ -22,6 +20,7 @@ import kotlinx.coroutines.launch
 class WorkoutFragment : Fragment() {
 
     private lateinit var binding: FragmentWorkoutBinding
+    private val templateRepository = TemplateRepository()
 
 
     override fun onCreateView(
@@ -37,16 +36,26 @@ class WorkoutFragment : Fragment() {
         val createTemplateBtn = binding.createTemplateButton
 
 
-        // dohvati bazu podataka
-        val db = AppDatabase.getDatabase(requireContext())
-        Log.d("WorkoutFragment", "Database initialized: $db")
         lifecycleScope.launch {
-            val templates = db.templateDao().getTemplates()
-            val templatesWithExercises = templates.map { template ->
-                val exercises = db.templateDao().getExercisesForTemplate(template.id)
-                template to exercises
-            }.toMutableList()
-            recyclerView.adapter = TemplateAdapter(templatesWithExercises, viewLifecycleOwner, db)
+
+            try {
+                val templates = templateRepository.getTemplates()
+                val templatesWithExercises = templates.map { template ->
+                    val exercises = templateRepository.getExercisesForTemplate(template.id)
+                    template to exercises
+                }.toMutableList()
+                Log.d("WorkoutFragment", "Templates with exercises: $templatesWithExercises")
+
+                // initializiraj adapter
+                recyclerView.adapter = TemplateAdapter(
+                    templatesWithExercises,
+                    viewLifecycleOwner,
+                    templateRepository
+                )
+            } catch (e: Exception) {
+                Log.e("WorkoutFragment", "Error loading templates", e)
+                recyclerView.visibility = View.GONE
+            }
         }
 
         // postavi onClickListener za gumb za kreiranje novog templatea

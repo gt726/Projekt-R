@@ -29,14 +29,6 @@ class AddExerciseActivity : AppCompatActivity() {
     private lateinit var adapter: AddExerciseAdapter  // povezivanje podataka s prikazom
     private val selectedExercises = mutableListOf<ExerciseWithSets>() // popis odabranih vjezbi
 
-//    private val selectedExercises = mutableListOf<ExerciseWithSets>(
-//        ExerciseWithSets(Exercise("Push-up"), 1),
-//        ExerciseWithSets(Exercise("Squat"), 2),
-//        ExerciseWithSets(Exercise("Plank"), 3),
-//        ExerciseWithSets(Exercise("Lunges"), 4),
-//        ExerciseWithSets(Exercise("Jumping Jacks"), 5),
-//        ExerciseWithSets(Exercise("Burpees"), 6)
-//    ) // testni popis
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -55,7 +47,6 @@ class AddExerciseActivity : AppCompatActivity() {
         val passedExercises =
             intent.getSerializableExtra("EXERCISES_LIST") as? ArrayList<ExerciseWithSets>
         if (passedExercises != null) {
-            //selectedExercises.clear()
             selectedExercises.addAll(passedExercises)
         }
 
@@ -63,7 +54,7 @@ class AddExerciseActivity : AppCompatActivity() {
         val startMode = intent.getStringExtra("START_MODE") ?: ""
         Log.d("AddExerciseActivity", "startMode: $startMode")
 
-        val existingTemplateId = intent.getIntExtra("TEMPLATE_ID", -1)
+        val existingTemplateId = intent.getStringExtra("TEMPLATE_ID") ?: ""
 
         // sortiraj vjezbe abecedno
         exerciseList = ExerciseList.list.sortedBy { it.name }
@@ -111,7 +102,7 @@ class AddExerciseActivity : AppCompatActivity() {
     }
 
     // funkcija za pop up window za dodavanje broja setova
-    private fun addSetsPrompt(exercise: Exercise, startMode: String, existingTemplateId: Int) {
+    private fun addSetsPrompt(exercise: Exercise, startMode: String, existingTemplateId: String) {
         val promptView = layoutInflater.inflate(R.layout.prompt_add_sets, null)
         val prompt = AlertDialog.Builder(this).setView(promptView).create()
         // postavi transparentnu pozadinu

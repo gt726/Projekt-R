@@ -19,16 +19,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.projektr.R
 import com.example.projektr.activities.ActiveWorkoutActivity
 import com.example.projektr.activities.template.EditTemplateActivity
-import com.example.projektr.database.AppDatabase
-import com.example.projektr.database.Template
-import com.example.projektr.database.TemplateExercise
-import com.example.projektr.fragments.main.WorkoutFragment
+import com.example.projektr.database.FirestoreTemplate.Template
+import com.example.projektr.database.FirestoreTemplate.TemplateExercise
+import com.example.projektr.database.TemplateRepository
 import kotlinx.coroutines.launch
 
 class TemplateAdapter(
     private val templatesWithExercises: MutableList<Pair<Template, List<TemplateExercise>>>,
     private val lifecycleOwner: LifecycleOwner,
-    private val db: AppDatabase
+    private val templateRepository: TemplateRepository = TemplateRepository()
 ) : RecyclerView.Adapter<TemplateAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -147,7 +146,7 @@ class TemplateAdapter(
 
                                 lifecycleOwner.lifecycleScope.launch {
                                     // azuriraj ime templatea u bazi
-                                    db.templateDao().renameTemplate(template.id, name)
+                                    templateRepository.renameTemplate(template.id, name)
                                 }
                                 // azuriraj ime templatea na popisu
                                 holder.templateName.text = name
@@ -169,7 +168,7 @@ class TemplateAdapter(
                     R.id.menu_delete -> {
                         lifecycleOwner.lifecycleScope.launch {
                             // izbrisi template iz baze
-                            db.templateDao().deleteTemplateAndExercises(template.id)
+                            templateRepository.deleteTemplate(template.id)
 
                             if (position in templatesWithExercises.indices) { // provjeri poziciju
                                 templatesWithExercises.removeAt(position)

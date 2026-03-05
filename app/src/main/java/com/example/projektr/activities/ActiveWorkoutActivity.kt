@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -15,9 +16,10 @@ import com.example.projektr.R
 import com.example.projektr.adapters.active_workout.AWExerciseAdapter
 import com.example.projektr.data.Exercise
 import com.example.projektr.data.ExerciseWithSets
-import com.example.projektr.database.AppDatabase
-import com.example.projektr.database.FinishedWorkout
-import com.example.projektr.database.FinishedWorkoutExercise
+import com.example.projektr.database.FinishedWorkoutRepository
+import com.example.projektr.database.FirestoreFinishedWorkout.FinishedWorkout
+import com.example.projektr.database.FirestoreFinishedWorkout.FinishedWorkoutExercise
+import com.example.projektr.database.TemplateRepository
 import kotlinx.coroutines.launch
 
 class ActiveWorkoutActivity : AppCompatActivity() {
@@ -27,6 +29,9 @@ class ActiveWorkoutActivity : AppCompatActivity() {
 
     // popis odabranih vjezbi
     private val exerciseList = mutableListOf<ExerciseWithSets>()
+
+    private val templateRepository = TemplateRepository()
+    private val workoutRepository = FinishedWorkoutRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +50,7 @@ class ActiveWorkoutActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
 
         // dohvati templateId iz intenta
-        val templateId = intent.getIntExtra("TEMPLATE_ID", -1)
+        val templateId = intent.getStringExtra("TEMPLATE_ID") ?: ""
         Log.d("ActiveWorkoutActivity", "templateId: $templateId")
 
         // dohvati elemente
@@ -54,15 +59,20 @@ class ActiveWorkoutActivity : AppCompatActivity() {
         val finishButton = findViewById<Button>(R.id.finish_button)
 
         // dohvati vjezbe za taj template iz baze
-        val db = AppDatabase.getDatabase(this)
         lifecycleScope.launch {
-            val template = db.templateDao().getTemplateById(templateId)
-            title.text = template.name
-            val exercises = db.templateDao().getExercisesForTemplate(templateId)
-            exerciseList.clear()
-            exerciseList.addAll(exercises.map {
-                ExerciseWithSets(Exercise(it.exerciseName), it.numberOfSets)
-            })
+            val templates = templateRepository.getTemplates()
+
+            val template = templates.find { it.id == templateId }
+
+            template?.let {
+                title.text = template.name
+                val exercises = templateRepository.getExercisesForTemplate(templateId)
+                exerciseList.clear()
+                exerciseList.addAll(exercises.map {
+                    ExerciseWithSets(Exercise(it.exerciseName), it.numberOfSets)
+                })
+            }
+
             adapter.notifyDataSetChanged()
         }
 
@@ -74,14 +84,11 @@ class ActiveWorkoutActivity : AppCompatActivity() {
         // zavrsi trening
         finishButton.setOnClickListener {
             lifecycleScope.launch {
-                val activeWorkoutDao = db.finishedWorkoutDao()
-
-                // stvori novi FinishedWorkout
                 val workout = FinishedWorkout(
                     workoutName = title.text.toString(),
                     date = System.currentTimeMillis()
                 )
-                val workoutId = activeWorkoutDao.insertWorkout(workout)
+                val workoutId = workoutRepository.insertFinishedWorkout(workout)
 
                 // dohvati sve setove iz adaptera
                 val allSetsData = adapter.getAllSetsData()
@@ -103,7 +110,7 @@ class ActiveWorkoutActivity : AppCompatActivity() {
                         }
 
                         val finishedExercise = FinishedWorkoutExercise(
-                            workoutId = workoutId.toInt(),
+                            workoutId = workoutId,
                             exerciseName = exerciseName,
                             weights = allWeights,
                             reps = allReps,
@@ -120,13 +127,18 @@ class ActiveWorkoutActivity : AppCompatActivity() {
 
                 if (!workoutEmpty) {
                     // spremi vjezbe u bazu
-                    activeWorkoutDao.insertWorkoutExercises(workoutExercises)
+                    workoutRepository.insertExercises(workoutId, workoutExercises)
                     Log.d("ActiveWorkoutActivity", "Workout saved successfully with ID: $workoutId")
                 } else {
                     // ako nema ispunjenih vjezbi, izbrisi finished workout
                     Log.d("ActiveWorkoutActivity", "Workout not saved. No valid exercises.")
-                    activeWorkoutDao.deleteWorkoutById(workoutId.toInt())
+                    workoutRepository.deleteFinishedWorkout(workoutId)
                 }
+                Toast.makeText(
+                    this@ActiveWorkoutActivity,
+                    "Workout finished",
+                    Toast.LENGTH_SHORT
+                ).show()
                 finish()
             }
         }
